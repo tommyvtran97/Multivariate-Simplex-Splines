@@ -1,1 +1,1 @@
-# Multivariate_Simplix_Splines
+## AE4320 Assignment: Multivariate Simplex Splines
