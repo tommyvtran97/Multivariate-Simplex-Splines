@@ -1,11 +1,8 @@
 function [z_pred, XX_k1k1, dt] =  run_IEKF(U_k, Z_k, stdw, stdv, doIEKF)
     
-    
-
     % Set simulation parameters
-    n               = size(U_k, 2);
     dt              = 0.01;
-    N               = 1000;
+    N               = size(U_k, 2);
     epsilon         = 1e-10;
     maxIterations   = 100;
 
@@ -20,7 +17,7 @@ function [z_pred, XX_k1k1, dt] =  run_IEKF(U_k, Z_k, stdw, stdv, doIEKF)
 
     %% Initial Estimate for Covariance Matrix
     stdx_0  = [0.1, 0.1, 0.1, 0.1];     % Convergence KF depends on this estimate!
-    P_0     = diag(stdx_0.^2);      % Create diagonal covariance matrix
+    P_0     = diag(stdx_0.^2);          % Create diagonal covariance matrix
 
     %% System Noise and Measurement Noise statistics
     Q = diag(stdw.^2);
@@ -75,18 +72,11 @@ function [z_pred, XX_k1k1, dt] =  run_IEKF(U_k, Z_k, stdw, stdv, doIEKF)
                     fprintf("Terminating IEKF: exceeded max iterations (%d)\n", maxIterations);
                     break
                 end
+                
                 itts = itts + 1;
                 eta1 = eta2;
 
                 Hx = kf_calc_Hx(0, eta1, U_k(:,k));
-
-                % Check observability of state
-                if (k == 1 && itts ==1)
-                    rankHF = kf_calcObsRank(Hx,Fx);
-                    if (rankHF < n)
-                        warning('The current state is not observable: rank of Observability Matrix is %d, should be %d', rankHF, n);
-                    end
-                end
 
                 % The innovation matrix
                 Ve = (Hx*P_kk_1 * Hx' + R); 
