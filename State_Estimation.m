@@ -5,10 +5,12 @@ clear;
 dataname = 'Dataset/F16traindata_CMabV_2020';
 load(dataname, 'Cm', 'Z_k', 'U_k');
 
-save = 1;
-doIEKF = 0;
+% Settings
+save = 0;
+doIEKF = 1;
 
-perc_val = 0.5;
+% Multivariate Spline Setting
+polynomial_order = 10;
 
 % Transpose the matrices
 Cm = Cm'; Z_k = Z_k'; U_k = U_k';
@@ -28,7 +30,7 @@ stdw    = [1e-3, 1e-3, 1e-3, 0];     % u, v, w and C
 stdv    = [0.035, 0.013, 0.110];     % alpha, beta and V
 
 %% Set Initial Values for States and Statistics
-Ex_0    = [150; 0.0; 0.0; 0.0];  % initial estimate of optimal value of x_k_1k_1
+Ex_0    = [Z_k(3,1); 0.5; 0.5; 0.5];  % initial estimate of optimal value of x_k_1k_1
 n       = length(stdw);         % number of states
 nm      = size(Z_k,1);          % number of measurements
 m       = size(U_k,2);          % number of inputs
@@ -50,19 +52,32 @@ x_k_1k_1 = Ex_0;            % x(0|0)=E{x_0}
 P_k_1k_1 = P_0;             % P(0|0)=P(0)
 
 %% Check for Observability prove that the Kalman Filter converges
-%observability();
+observability();
 
 %% Run Iterated Extended Kalman filter
-[z_pred, XX_k1k1, dt] = IEKF_function(U_k, Z_k, stdw, stdv, doIEKF);
-%IEKF_plot(alpha_m, beta_m, Vtot, z_pred, U_k, XX_k1k1, save)
+[z_pred, XX_k1k1, dt, IEKFitcount] = IEKF_function(U_k, Z_k, stdw, stdv, doIEKF);
+%IEKF_plot(alpha_m, beta_m, Vtot, Cm, z_pred, U_k, XX_k1k1, IEKFitcount, save)
 
 %% Split Data into Idenfication and Validation Set
-[X_id, X_val, Y_id, Y_val] = split_data(z_pred, Cm, perc_val);
+[X_id, X_val, Y_id, Y_val] = split_data(z_pred, Cm);
 
 %% Run Ordinary Least Square Estimator
-expo = create_polynomial(2, 3);
-[Y_hat_id, Y_hat_val, Y_hat_full, theta_hat_id, theta_hat_val, theta_hat_full, A_matrix_id, A_matrix_val, A_matrix_full] = OLS_function(X_id, Y_id', X_val, Y_val',z_pred, Cm', expo);
-OLS_plot(X_val, Y_val, Y_hat_val);
+MSE_x = [];
+MSE_y = [];
+
+% Calculate the Mean Squared Error for different polynomial order
+for i=1:1:polynomial_order
+    expo = create_polynomial(n, i);
+    [Y_hat_id, Y_hat_val, theta_hat, A_matrix_val] = OLS_function(X_id, Y_id, X_val, expo);
+
+    residual  = (Y_val - Y_hat_val).^2;
+    MSE = sum(residual)/size(residual, 2);
+
+    MSE_x = [MSE_x, i];
+    MSE_y = [MSE_y, MSE];
+end
+
+[VAR, COR] = OLS_plot(X_val, Y_val, Y_hat_val, MSE_x, MSE_y, A_matrix_val, theta_hat, save); 
 
 
 

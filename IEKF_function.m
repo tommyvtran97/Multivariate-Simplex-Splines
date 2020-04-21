@@ -1,4 +1,4 @@
-function [z_pred, XX_k1k1, dt] =  run_IEKF(U_k, Z_k, stdw, stdv, doIEKF)
+function [z_pred, XX_k1k1, dt, IEKFitcount] =  run_IEKF(U_k, Z_k, stdw, stdv, doIEKF)
     
     % Set simulation parameters
     dt              = 0.01;
@@ -92,8 +92,8 @@ function [z_pred, XX_k1k1, dt] =  run_IEKF(U_k, Z_k, stdw, stdv, doIEKF)
 
             end 
 
-            IEFKitcount(k)  = itts;
-            x_k_1k_1        = eta2;
+            IEKFitcount(k,1)  = itts;
+            x_k_1k_1          = eta2;
 
         else  
             % Correction

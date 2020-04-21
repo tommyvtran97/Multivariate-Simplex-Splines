@@ -94,14 +94,25 @@ function [VAR, COV] = OLS_plot(X_val, Y_val, Y_hat_val, MSE_x, MSE_y, A_matrix_v
     conf = 1.96/sqrt(length(residual));
     [acx, lags] = xcorr(residual-mean(residual), 'coeff');
     
+%     plotID = 2004;
+%     figure(plotID);
+%     set(plotID, 'Position', [800 100 1500 500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [1 1 1], 'PaperPositionMode', 'auto');
+%     plot(residual)
+%     xlabel("Data point")
+%     ylabel('Absolute residual')
+%     grid on 
+%     if (save)
+%     saveas(gcf,[pwd,'\Plots\absolute_residual'],'epsc');
+%     end
+    
     plotID = 2004;
     figure(plotID); hold on;
     set(plotID, 'Position', [800 100 1500 500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [1 1 1], 'PaperPositionMode', 'auto');
     line([lags(1), lags(end)], [conf, conf], 'Color','red','LineStyle','--')
     line([lags(1), lags(end)], [-conf, -conf], 'Color','red','LineStyle','--')
     plot(lags, acx)
-    xlabel('Number of lags', 'Interpreter', 'Latex')
-    ylabel('Auto-correlation', 'Interpreter', 'Latex')
+    xlabel('Number of lags')
+    ylabel('Auto-correlation')
     grid on
     if (save)
     saveas(gcf,[pwd,'\Plots\residual_auto'],'epsc');
@@ -123,9 +134,6 @@ function [VAR, COV] = OLS_plot(X_val, Y_val, Y_hat_val, MSE_x, MSE_y, A_matrix_v
     ylabel('Paramater Coefficient [-]', 'Interpreter', 'Latex')
     title('Parameter Coefficient of OLS Estimator')
     grid on
-    if (save)
-    saveas(gcf,[pwd,'\Plots\OLS_coefficients'],'epsc');
-    end
     
     plotID = 2006;
     figure(plotID);
@@ -133,10 +141,9 @@ function [VAR, COV] = OLS_plot(X_val, Y_val, Y_hat_val, MSE_x, MSE_y, A_matrix_v
     plot(coef_idx, VAR, 'b-')
     xlabel('Index [-]', 'Interpreter', 'Latex')
     ylabel('$\sigma^2_{\hat{\theta}_i}$ [-]', 'Interpreter', 'Latex')
-    title('Parameter Variance of OLS Estimator', 'Interpreter', 'Latex')
+    title('Parameter Variance of OLS Estimator')
     grid on
-    if (save)
-    saveas(gcf,[pwd,'\Plots\Variance_OLS'],'epsc');
-    end
+
+    
 
 end 

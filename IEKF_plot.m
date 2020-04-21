@@ -1,4 +1,4 @@
-function IEKF_plot(alpha_m, beta_m, Vtot, z_pred, U_k, XX_k1k1, save)
+function IEKF_plot(alpha_m, beta_m, Vtot, Cm, z_pred, U_k, XX_k1k1, IEKFitcount, save)
     
     % Set simulation parameters
     n               = size(U_k, 2);
@@ -22,10 +22,11 @@ function IEKF_plot(alpha_m, beta_m, Vtot, z_pred, U_k, XX_k1k1, save)
     
     % Define the time vector
     t = 0:dt:dt*size(U_k,2)-dt;
+    idx = 1:1:size(IEKFitcount, 1);
 
     % Show IEKF Results
-    
-    plotID = 1000;
+ 
+    plotID = 1001;
     figure(plotID);
     subplot(311)
     plot(t(1:N), alpha_m(1:N), 'r-', 'LineWidth', 1.5)
@@ -33,81 +34,106 @@ function IEKF_plot(alpha_m, beta_m, Vtot, z_pred, U_k, XX_k1k1, save)
     plot(t(1:N), kf_alpha(1:N), 'b-', 'LineWidth', 1.5)
     hold on
     plot(t(1:N), alpha_true(1:N), 'g-', 'LineWidth', 1.5)
-    legend('Measurement Data', 'Kalman Filter', 'True Data', 'location', 'northwest')
-    xlim([0 50])
+    set(gcf, 'Position',  [0, 0, 1500, 1500])
     set(gca,'FontSize',18);
     xlabel('time','interpreter','latex','FontSize', 25); 
     ylabel('$\alpha$ [rad]','interpreter','latex','FontSize', 25); 
-    set(gcf, 'Position',  [0, 0, 1500, 1500])
+    legend('Measurement Data', 'Kalman Filter', 'True Data', 'location', 'northwest')
     grid on
 
     subplot(312)
     plot(t(1:N), beta_m(1:N), 'r-', 'LineWidth', 1.5)
     hold on
     plot(t(1:N), kf_beta(1:N), 'b-', 'LineWidth', 1.5)
-    xlim([0 50])
     set(gca,'FontSize',18);
+    set(gcf, 'Position',  [0, 0, 1000, 1000])
     xlabel('time [s]','interpreter','latex','FontSize', 25); 
     ylabel('$\beta$ [rad]','interpreter','latex','FontSize', 25); 
-    set(gcf, 'Position',  [0, 0, 1500, 1500])
     grid on
     
     subplot(313)
     plot(t(1:N), Vtot(1:N), 'r-', 'LineWidth', 1.5)
     hold on
     plot(t(1:N), kf_Vtot(1:N), 'b-', 'LineWidth', 1.5)
-    xlim([0 50])
     set(gca,'FontSize',18);
+    set(gcf, 'Position',  [0, 0, 1000, 1000])
     xlabel('time [s]','interpreter','latex','FontSize', 25); 
     label1 = ylabel('$V$ [m/s]','interpreter','latex','FontSize', 25); 
-    set(gcf, 'Position',  [0, 0, 1500, 1500])
     label1.Position(1) = label1.Position(1) - 0.12;
     grid on
     if (save)
     saveas(gcf,[pwd,'\Plots\measurement_kf'],'epsc');
     end
     
-    plotID = 1001;
+    plotID = 1002;
     figure(plotID);
     subplot(411)
     plot(t(1:N), state_u(1:N), 'b-')
-    xlim([0 50])
     set(gca,'FontSize',18);
+    set(gcf, 'Position',  [0, 0, 1000, 1000])
     xlabel('time [s]','interpreter','latex','FontSize', 25); 
     ylabel('$u$ [m/s]','interpreter','latex','FontSize', 25); 
-    set(gcf, 'Position',  [0, 0, 1500, 1500])
     grid on 
 
     subplot(412)
     plot(t(1:N), state_v(1:N), 'b-')
-    xlim([0 50])
-    set(gca,'FontSize',18);
+    set(gca,'FontSize',18); 
+    set(gcf, 'Position',  [0, 0, 1500, 1500])
     xlabel('time [s]','interpreter','latex','FontSize', 25); 
     label1 = ylabel('$v$ [m/s]','interpreter','latex','FontSize', 25); 
-    set(gcf, 'Position',  [0, 0, 1500, 1500])
     label1.Position(1) = label1.Position(1) - 0.25;
     grid on
     
     subplot(413)
     plot(t(1:N), state_w(1:N), 'b-')
-    xlim([0 50])
     set(gca,'FontSize',18);
+    set(gcf, 'Position',  [0, 0, 1000, 1000])
     xlabel('time [s]','interpreter','latex','FontSize', 25); 
     label2 = ylabel('$w$ [m/s]','interpreter','latex','FontSize', 25); 
-    set(gcf, 'Position',  [0, 0, 1500, 1500])
     label2.Position(1) = label2.Position(1) - 0.23;
     grid on
 
     subplot(414)
     plot(t(1:N), state_C(1:N), 'b-')
-    xlim([0 50])
     set(gca,'FontSize',18);
+    set(gcf, 'Position',  [0, 0, 1000, 1000])
     xlabel('time [s]','interpreter','latex','FontSize', 25); 
     label3 = ylabel('$C_{\alpha_{up}}$ [-]','interpreter','latex','FontSize', 25); 
-    set(gcf, 'Position',  [0, 0, 1500, 1500])
     label3.Position(1) = label3.Position(1) - 0.21;
     grid on
     if (save)
     saveas(gcf,[pwd,'\Plots\state_kf'],'epsc');
+    end
+
+    plotID = 1003;
+    figure(plotID);
+    set(plotID, 'Position', [0 0 1000 1000], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [1 1 1], 'PaperPositionMode', 'auto');
+    plot3(alpha_m, beta_m, Cm, '-r'); 
+    hold on
+    plot3(kf_alpha, kf_beta, Cm, '-b'); 
+    hold on
+    plot3(alpha_true, kf_beta, Cm, '-g');
+    view(0, 90); 
+    %set(gca,'FontSize',18);
+    ylabel('$\beta$ [rad]','interpreter','latex','FontSize', 25);
+    xlabel('$\alpha$ [rad]','interpreter','latex','FontSize', 25);
+    zlabel('C_m [-]');
+    title('F16 CM(\alpha_m, \beta_m) raw datapoints only');
+    legend('Measurement Data', 'Kalman Filter', 'True Data', 'location', 'northwest')
+    grid on
+    if (save)
+    saveas(gcf,[pwd,'\Plots\kf_3D'],'epsc');
+    end
+
+    plotID = 1004;
+    figure(plotID);
+    set(plotID, 'Position', [0 0 1000 1000], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [1 1 1], 'PaperPositionMode', 'auto');
+    plot(idx, IEKFitcount, 'b-')
+    xlabel('Data Index [-]','interpreter','latex','FontSize', 25);
+    ylabel('Number of Iteration [-]','interpreter','latex','FontSize', 25);
+    title('Number of iterations performed by the Iterated Extended Kalman Filter');
+    grid on
+    if (save)
+    saveas(gcf,[pwd,'\Plots\IEKF_iterations'],'epsc');
     end
 end
