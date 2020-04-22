@@ -5,7 +5,7 @@ function [Y_hat_id, Y_hat_val, theta_hat, A_matrix_val] = OLS_function(X_id, Y_i
     
     A_matrix_id  = zeros(size(X_id, 2), size(expo, 2));
     A_matrix_val = zeros(size(X_val, 2), size(expo, 2));
-
+    
     for i=1:1:size(X_id,2)
         for j=1:1:size(expo,2)
             if (expo(1,j) ~= 0) & (expo(2,j) ~= 0)
@@ -39,7 +39,6 @@ function [Y_hat_id, Y_hat_val, theta_hat, A_matrix_val] = OLS_function(X_id, Y_i
             end 
         end
     end 
-
     
     % Using pinv to avoid matrix instability
     theta_hat = pinv(A_matrix_id) * Y_id;

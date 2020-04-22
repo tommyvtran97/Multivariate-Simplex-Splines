@@ -6,7 +6,7 @@ dataname = 'Dataset/F16traindata_CMabV_2020';
 load(dataname, 'Cm', 'Z_k', 'U_k');
 
 % Settings
-save = 0;
+save = 1;
 doIEKF = 1;
 
 % Multivariate Spline Setting
@@ -56,7 +56,7 @@ observability();
 
 %% Run Iterated Extended Kalman filter
 [z_pred, XX_k1k1, dt, IEKFitcount] = IEKF_function(U_k, Z_k, stdw, stdv, doIEKF);
-%IEKF_plot(alpha_m, beta_m, Vtot, Cm, z_pred, U_k, XX_k1k1, IEKFitcount, save)
+IEKF_plot(alpha_m, beta_m, Vtot, Cm, z_pred, U_k, XX_k1k1, IEKFitcount, save)
 
 %% Split Data into Idenfication and Validation Set
 [X_id, X_val, Y_id, Y_val] = split_data(z_pred, Cm);
