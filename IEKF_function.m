@@ -1,4 +1,4 @@
-function [z_pred, XX_k1k1, dt, IEKFitcount] =  run_IEKF(U_k, Z_k, stdw, stdv, doIEKF)
+function [z_pred, z_pred_correct, XX_k1k1, IEKFitcount, n] =  run_IEKF(U_k, Z_k, stdw, stdv, doIEKF)
     
     % Set simulation parameters
     dt              = 0.01;
@@ -10,26 +10,24 @@ function [z_pred, XX_k1k1, dt, IEKFitcount] =  run_IEKF(U_k, Z_k, stdw, stdv, do
     Ex_0    = [Z_k(3,1); 0.5; 0.5; 0.5];  % initial estimate of optimal value of x_k_1k_1
     n       = length(stdw);         % number of states
     nm      = size(Z_k,1);          % number of measurements
-    m       = size(U_k,2);          % number of inputs
+    m       = size(U_k,1);          % number of inputs
 
     B       = eye(n);               % input matrix
     G       = eye(length(stdw));    % noise input matrix
 
     %% Initial Estimate for Covariance Matrix
-    stdx_0  = [0.1, 0.1, 0.1, 0.1];     % Convergence KF depends on this estimate!
-    P_0     = diag(stdx_0.^2);          % Create diagonal covariance matrix
-
+    stdx_0  = [sqrt(0.1), sqrt(0.1), sqrt(0.1), sqrt(0.1)];     % Convergence KF depends on this estimate!
+    P_0     = diag(stdx_0.^2);                                  % Create diagonal covariance matrix
+    
     %% System Noise and Measurement Noise statistics
     Q = diag(stdw.^2);
     R = diag(stdv.^2);
-    %w_k = stdw * randn(n, N) + Ew;  %TODO: Is this required?
-    %v_k = stdv * randn(n, N) + Ev;  %TODO: Is this required?
 
     %% Initialize Arrays to Store Results
-    XX_k1k1 = zeros(n, N);
-    PP_k1k1 = zeros(n, N);
-    STDx_cor = zeros(n, N);
-    z_pred = zeros(nm, N);
+    XX_k1k1     = zeros(n, N);
+    PP_k1k1     = zeros(n, N);
+    STDx_cor    = zeros(n, N);
+    z_pred      = zeros(nm, N);
     IEKFitcount = zeros(N, 1);
 
     x_k_1k_1 = Ex_0;            % x(0|0)=E{x_0}
@@ -41,21 +39,20 @@ function [z_pred, XX_k1k1, dt, IEKFitcount] =  run_IEKF(U_k, Z_k, stdw, stdv, do
 
     for k = 1:N
         % Prediction x(k+1|k) 
-        [t, x_kk_1] = rk4(@kf_calc_f, x_k_1k_1,U_k(:,k), [ti tf]); 
+        [t, x_kk_1] = rk4(@kf_calc_f, x_k_1k_1, U_k(:,k), [ti tf]);
 
         % Prediction Output z(k+1|k)
-        z_kk_1 = kf_calc_h(0, x_kk_1, U_k(:,k)); %x_kk_1.^3; 
+        z_kk_1 = kf_calc_h(0, x_kk_1, U_k(:,k));
         z_pred(:,k) = z_kk_1;
 
         % Calc Phi(k+1,k) and Gamma(k+1, k)
         Fx = kf_calc_Fx(0, x_kk_1, U_k(:,k)); % perturbation of f(x,u,t)
 
-        % The continuous to discrete time transformation of Df(x,u,t) and G
-        [dummy, Psi] = c2d(Fx, B, dt);   
-        [Phi, Gamma] = c2d(Fx, G, dt);   
+        % The continuous to discrete time transformation of Df(x,u,t) and G  
+        [Phi, Gamma] = c2d(Fx, G, dt);
 
         % Prediction covariance matrix P(k+1|k)
-        P_kk_1 = Phi*P_k_1k_1*Phi' + Gamma*Q*Gamma'; 
+        P_kk_1 = Phi * P_k_1k_1 * Phi' + Gamma * Q * Gamma';
         P_pred = diag(P_kk_1);
         stdx_pred = sqrt(diag(P_kk_1));
 
@@ -64,12 +61,13 @@ function [z_pred, XX_k1k1, dt, IEKFitcount] =  run_IEKF(U_k, Z_k, stdw, stdv, do
 
             % Iterative part
             eta2 = x_kk_1;
-            err = 2*epsilon;
+            err  = 2 * epsilon;
 
             itts = 0;
             while (err > epsilon)
                 if (itts >= maxIterations)
-                    fprintf("Terminating IEKF: exceeded max iterations (%d)\n", maxIterations);
+                    fprintf("Terminating IEKF: exceeded max iterations (%d)\n",...
+                    maxIterations)
                     break
                 end
                 
@@ -79,7 +77,7 @@ function [z_pred, XX_k1k1, dt, IEKFitcount] =  run_IEKF(U_k, Z_k, stdw, stdv, do
                 Hx = kf_calc_Hx(0, eta1, U_k(:,k));
 
                 % The innovation matrix
-                Ve = (Hx*P_kk_1 * Hx' + R); 
+                Ve = (Hx * P_kk_1 * Hx' + R);
 
                 % Calculate the Kalman gain matrix
                 K = P_kk_1 * Hx' / Ve;
@@ -111,7 +109,7 @@ function [z_pred, XX_k1k1, dt, IEKFitcount] =  run_IEKF(U_k, Z_k, stdw, stdv, do
         end
 
         % Calculate covariance matrix of state estimation error
-        P_k_1k_1 = (eye(n) - K*Hx) * P_kk_1 * (eye(n) - K*Hx)' + K*R*K'; %[HUH?] 
+        P_k_1k_1 = (eye(n) - K*Hx) * P_kk_1 * (eye(n) - K*Hx)' + K*R*K'; 
         P_cor = diag(P_k_1k_1);
         stdx_cor = sqrt(diag(P_k_1k_1));
 
@@ -121,8 +119,11 @@ function [z_pred, XX_k1k1, dt, IEKFitcount] =  run_IEKF(U_k, Z_k, stdw, stdv, do
 
         % Store results
         XX_k1k1(:,k) = x_k_1k_1;
-        %PP_k1k1(:,k) = P_k_1k_1;           % [Do I need this?]
+        %PP_k1k1(:,k) = P_k_1k_1;           
         STDx_cor(:,k) = stdx_cor;
     end
+    
+    z_pred_correct = z_pred;
+    z_pred_correct(1,:) = z_pred_correct(1,:) ./ (1 + XX_k1k1(4, :));
     
 end 

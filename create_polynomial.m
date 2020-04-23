@@ -1,4 +1,4 @@
-function [expo] = create_polynomial(N_states, poly_order)
+function [expo] = create_polynomial(poly_order)
     
     expo = [];
     for i=0:1:poly_order
