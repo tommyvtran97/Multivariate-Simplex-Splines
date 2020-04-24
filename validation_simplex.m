@@ -1,40 +1,36 @@
-function [] = validation(X_id, X_val, Y_id, Y_val, Y_hat_val, polynomial_order, max_polynomial_order, save, plot_OLS)
+function [] = validation_simplex(X_id, X_val, Y_id, Y_val, c_hat,...
+    simplex_order, max_simplex_order, plot_result, save)
     
-    if (plot_OLS)
+    if (plot_result)
  
         RMSE_x = [];
         RMSE_y = [];
 
-        for order=1:1:max_polynomial_order
-            expo = create_polynomial(order);
-            [Y_hat_id, Y_hat_val, theta_hat, Ax_val] = OLS_function(X_id, Y_id, X_val, expo);
-
-            residual  = (Y_val - Y_hat_val).^2;
-            RMSE = rms(residual);
-
+        for order=1:1:max_simplex_order
+            [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, RMSE] = simplex_polynomial(X_id, Y_id,...
+                X_val, Y_val, order,...
+                plot_result, save);
             RMSE_x = [RMSE_x, order];
             RMSE_y = [RMSE_y, RMSE];
         end
-        
-        residual = (Y_val - Y_hat_val)';
 
-        expo = create_polynomial(polynomial_order);
-        [Y_hat_id, Y_hat_val, theta_hat, Ax_val] = OLS_function(X_id, Y_id, X_val, expo);
+        [~, ~, ~, ~, Bx_val, ~, ~, ~, ~, residual, ~] = simplex_polynomial(X_id, Y_id,...
+            X_val, Y_val, simplex_order, plot_result, save);
 
-        residual = (Y_val - Y_hat_val)';
+        residual = residual';
 
         conf = 1.96/sqrt(length(residual));
         [acx, lags] = xcorr(residual-mean(residual), 'coeff');
 
         % Statistical Analysis
-        sigma = (residual' * residual) / (size(Ax_val, 1) - size(Ax_val, 2));
-        COV = sigma * pinv(Ax_val' * Ax_val);
+        sigma = (residual' * residual) / (size(Bx_val, 1) - size(Bx_val, 2));
+        COV = sigma * pinv(Bx_val' * Bx_val);
         VAR = diag(COV);
 
         coef_idx = 1:1:size(VAR, 1);
-        coef_OLS_idx = 1:1:size(theta_hat, 1);
+        coef_simplex_idx = 1:1:size(Bx_val, 2);
 
-        plotID = 3001;
+        plotID = 5001;
         figure(plotID);
         set(plotID, 'Position', [0 100 800 500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [1 1 1], 'PaperPositionMode', 'auto');
         plot(RMSE_x, RMSE_y, 'b^-', 'MarkerSize', 14, 'MarkerFaceColor',[1 .6 .6])
@@ -43,23 +39,23 @@ function [] = validation(X_id, X_val, Y_id, Y_val, Y_hat_val, polynomial_order, 
         legend('Validation Dataset Accuracy', 'location', 'northwest');
         grid on
         if (save)
-        saveas(gcf,[pwd,'\Plots\OLS_accuracy'],'epsc');
+        saveas(gcf,[pwd,'\Plots\simplex_rms'],'epsc');
         end
 
-        plotID = 3002;
+        plotID = 5002;
         figure(plotID);
         nbins = 50;
         set(plotID, 'Position', [0 100 800 500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [1 1 1], 'PaperPositionMode', 'auto');
         histogram(residual, nbins)
         ylabel('Number of Residuals','interpreter','latex');
         xlabel('Residual $C_m$','interpreter','latex');
-        legend(string(polynomial_order) + 'th order polynomial', 'location', 'northwest');
+        legend(string(simplex_order) + 'th order polynomial', 'location', 'northwest');
         grid on
         if (save)
         saveas(gcf,[pwd,'\Plots\Cm_normal'],'epsc');
         end
 
-        plotID = 3003;
+        plotID = 5003;
         figure(plotID);
         set(plotID, 'Position', [0 100 800 500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [1 1 1], 'PaperPositionMode', 'auto');
         line([lags(1), lags(end)], [conf, conf], 'Color','red','LineStyle','--')
@@ -75,14 +71,14 @@ function [] = validation(X_id, X_val, Y_id, Y_val, Y_hat_val, polynomial_order, 
         saveas(gcf,[pwd,'\Plots\Cm_auto'],'epsc');
         end
 
-        plotID = 3004;
+        plotID = 5004;
         figure(plotID);
         subplot(121)
         set(plotID, 'Position', [0 100 1500 500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [1 1 1], 'PaperPositionMode', 'auto');
-        bar(coef_OLS_idx, theta_hat, 'b')
+        bar(coef_simplex_idx, c_hat, 'b')
         xlabel('Index [-]', 'Interpreter', 'Latex')
         ylabel('Paramater Coefficient [-]', 'Interpreter', 'Latex')
-        legend(string(polynomial_order)+ 'th order polynomial', 'location', 'northwest')
+        legend(string(simplex_order)+ 'th order polynomial', 'location', 'northwest')
         grid on
 
         subplot(122)
@@ -91,7 +87,7 @@ function [] = validation(X_id, X_val, Y_id, Y_val, Y_hat_val, polynomial_order, 
         ylabel('Coefficient Variance', 'Interpreter', 'Latex')
         grid on
         if (save)
-        saveas(gcf,[pwd,'\Plots\OLS_ParVar'],'epsc');
+        saveas(gcf,[pwd,'\Plots\Simplex_ParVar'],'epsc');
         end
     end
     
