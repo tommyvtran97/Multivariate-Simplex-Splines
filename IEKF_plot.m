@@ -24,7 +24,7 @@ function IEKF_plot(alpha_m, beta_m, Vtot, Cm, z_pred, z_pred_correct, U_k, XX_k1
         % Show IEKF Results
         plotID = 1001;
         figure(plotID);
-        set(plotID, 'Position', [0 100 1500 1000], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [1 1 1], 'PaperPositionMode', 'auto');
+        set(plotID, 'Position', [0 100 1500 1000], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
         subplot(311)
         plot(t(1:N), alpha_m(1:N), 'r-', 'LineWidth', 1.5)
         hold on
@@ -58,7 +58,7 @@ function IEKF_plot(alpha_m, beta_m, Vtot, Cm, z_pred, z_pred_correct, U_k, XX_k1
 
         plotID = 1002;
         figure(plotID);
-        set(plotID, 'Position', [0 100 1000 1500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [1 1 1], 'PaperPositionMode', 'auto');
+        set(plotID, 'Position', [0 100 1000 1500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
         subplot(411)
         plot(t(1:N), state_u(1:N), 'b-')
         xlabel('time [s]','interpreter','latex','FontSize', 25); 
@@ -91,7 +91,7 @@ function IEKF_plot(alpha_m, beta_m, Vtot, Cm, z_pred, z_pred_correct, U_k, XX_k1
 
         plotID = 1003;
         figure(plotID);
-        set(plotID, 'Position', [0 100 1000 1000], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [1 1 1], 'PaperPositionMode', 'auto');
+        set(plotID, 'Position', [0 100 1000 1000], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
         plot3(alpha_m, beta_m, Cm, '-r'); 
         hold on
         plot3(kf_alpha, kf_beta, Cm, '-b'); 
@@ -110,7 +110,7 @@ function IEKF_plot(alpha_m, beta_m, Vtot, Cm, z_pred, z_pred_correct, U_k, XX_k1
 
         plotID = 1004;
         figure(plotID);
-        set(plotID, 'Position', [0 100 800 500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [1 1 1], 'PaperPositionMode', 'auto');
+        set(plotID, 'Position', [0 100 800 500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
         plot(idx, IEKFitcount, 'b-')
         xlabel('Data Index [-]','interpreter','latex','FontSize', 25);
         ylabel('Number of Iteration [-]','interpreter','latex','FontSize', 25);

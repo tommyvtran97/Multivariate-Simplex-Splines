@@ -53,11 +53,14 @@ function [TRI, PHI, IMap_id, BaryC_id, Bx_val, c_hat, X_val, Y_val, Yb_hat_val, 
     
     % Calculate the C coefficients 
     c_hat = pinv(Bx_id' * Bx_id) * Bx_id' * Y_id;
-
-    Yb_hat_val  = (Bx_val * c_hat)';  % Tranpose to correct size
+    
+    % Calculate validation estiation
+    Yb_hat_val  = (Bx_val * c_hat)';    % Tranpose to correct size
+    
     X_val = X_val';
     Y_val = Y_val';
     
+    % Calculate residual and RMSE
     residual = (Y_val - Yb_hat_val);
     RMSE = rms(residual.^2);
 

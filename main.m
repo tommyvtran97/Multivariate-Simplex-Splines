@@ -15,7 +15,7 @@ doIEKF = 1;
 % Multivariate Spline Setting
 max_polynomial_order    = 15;
 polynomial_order        = 10;
-max_simplex_order       = 10;
+max_simplex_order       = 15;
 simplex_order           = 10;
 
 % Plotting Settings

@@ -19,7 +19,7 @@ function [] = OLS_plot(X_val, Y_val, Y_hat_val, save, plot_OLS)
         plotID = 2001;
         figure(plotID);
         subplot(121)
-        set(plotID, 'Position', [0 100 1500 500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [1 1 1], 'PaperPositionMode', 'auto');
+        set(plotID, 'Position', [0 100 1500 500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
         trisurf(TRIeval, alpha_m, beta_m, Cm, 'EdgeColor', 'none'); 
         grid on;
         hold on;

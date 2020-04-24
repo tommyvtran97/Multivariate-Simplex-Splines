@@ -32,7 +32,7 @@ function [] = validation_simplex(X_id, X_val, Y_id, Y_val, c_hat,...
 
         plotID = 5001;
         figure(plotID);
-        set(plotID, 'Position', [0 100 800 500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [1 1 1], 'PaperPositionMode', 'auto');
+        set(plotID, 'Position', [0 100 800 500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
         plot(RMSE_x, RMSE_y, 'b^-', 'MarkerSize', 14, 'MarkerFaceColor',[1 .6 .6])
         ylabel('Root Mean Squared Error (RMSE) [-]');
         xlabel('Polynomial Degree [-]');
@@ -45,7 +45,7 @@ function [] = validation_simplex(X_id, X_val, Y_id, Y_val, c_hat,...
         plotID = 5002;
         figure(plotID);
         nbins = 50;
-        set(plotID, 'Position', [0 100 800 500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [1 1 1], 'PaperPositionMode', 'auto');
+        set(plotID, 'Position', [0 100 800 500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
         histogram(residual, nbins)
         ylabel('Number of Residuals','interpreter','latex');
         xlabel('Residual $C_m$','interpreter','latex');
@@ -57,7 +57,7 @@ function [] = validation_simplex(X_id, X_val, Y_id, Y_val, c_hat,...
 
         plotID = 5003;
         figure(plotID);
-        set(plotID, 'Position', [0 100 800 500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [1 1 1], 'PaperPositionMode', 'auto');
+        set(plotID, 'Position', [0 100 800 500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
         line([lags(1), lags(end)], [conf, conf], 'Color','red','LineStyle','--')
         hold on
         line([lags(1), lags(end)], [-conf, -conf], 'Color','red','LineStyle','--')
@@ -74,7 +74,7 @@ function [] = validation_simplex(X_id, X_val, Y_id, Y_val, c_hat,...
         plotID = 5004;
         figure(plotID);
         subplot(121)
-        set(plotID, 'Position', [0 100 1500 500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [1 1 1], 'PaperPositionMode', 'auto');
+        set(plotID, 'Position', [0 100 1500 500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
         bar(coef_simplex_idx, c_hat, 'b')
         xlabel('Index [-]', 'Interpreter', 'Latex')
         ylabel('Paramater Coefficient [-]', 'Interpreter', 'Latex')
