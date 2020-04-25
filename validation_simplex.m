@@ -7,14 +7,14 @@ function [] = validation_simplex(X_id, X_val, Y_id, Y_val, c_hat,...
         RMSE_y = [];
 
         for order=1:1:max_simplex_order
-            [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, RMSE] = simplex_polynomial(X_id, Y_id,...
+            [~, ~, ~, ~, ~, ~, ~, ~, RMSE] = simplex_polynomial(X_id, Y_id,...
                 X_val, Y_val, order,...
                 plot_result, save);
             RMSE_x = [RMSE_x, order];
             RMSE_y = [RMSE_y, RMSE];
         end
 
-        [~, ~, ~, ~, Bx_val, ~, ~, ~, ~, residual, ~] = simplex_polynomial(X_id, Y_id,...
+        [~, ~, Bx_val, ~, ~, ~, ~, residual, ~] = simplex_polynomial(X_id, Y_id,...
             X_val, Y_val, simplex_order, plot_result, save);
 
         residual = residual';
@@ -32,41 +32,40 @@ function [] = validation_simplex(X_id, X_val, Y_id, Y_val, c_hat,...
 
         plotID = 5001;
         figure(plotID);
-        set(plotID, 'Position', [0 100 800 500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
-        plot(RMSE_x, RMSE_y, 'b^-', 'MarkerSize', 14, 'MarkerFaceColor',[1 .6 .6])
-        ylabel('Root Mean Squared Error (RMSE) [-]');
-        xlabel('Polynomial Degree [-]');
-        legend('Validation Dataset Accuracy', 'location', 'northwest');
-        grid on
+        set(plotID, 'Position', [0 0 600 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
+        plot(RMSE_x, RMSE_y, 'b^-', 'MarkerSize', 11, 'MarkerFaceColor',[0 0 1])
+        ylabel('Root Mean Squared Error (RMSE) [-]','interpreter','latex');
+        xlabel('Polynomial Degree [-]','interpreter','latex');
+        legend('Validation Dataset Accuracy', 'location', 'northwest','interpreter','latex');
+        grid on;
         if (save)
         saveas(gcf,[pwd,'\Plots\simplex_rms'],'epsc');
         end
 
         plotID = 5002;
         figure(plotID);
+        set(plotID, 'Position', [0 0 600 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
         nbins = 50;
-        set(plotID, 'Position', [0 100 800 500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
-        histogram(residual, nbins)
+        histogram(residual, nbins);
         ylabel('Number of Residuals','interpreter','latex');
         xlabel('Residual $C_m$','interpreter','latex');
         legend(string(simplex_order) + 'th order polynomial', 'location', 'northwest');
-        grid on
+        grid on;
         if (save)
         saveas(gcf,[pwd,'\Plots\Cm_normal'],'epsc');
         end
 
         plotID = 5003;
         figure(plotID);
-        set(plotID, 'Position', [0 100 800 500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
-        line([lags(1), lags(end)], [conf, conf], 'Color','red','LineStyle','--')
-        hold on
-        line([lags(1), lags(end)], [-conf, -conf], 'Color','red','LineStyle','--')
-        hold on 
-        plot(lags, acx)
-        xlabel('Number of lags', 'Interpreter', 'Latex')
-        ylabel('Auto-correlation', 'Interpreter', 'Latex')
-        legend('95% Confidence Interval')
-        grid on
+        set(plotID, 'Position', [0 0 600 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
+        hold on;
+        line([lags(1), lags(end)], [conf, conf], 'Color','red','LineStyle','--');
+        line([lags(1), lags(end)], [-conf, -conf], 'Color','red','LineStyle','--');
+        plot(lags, acx);
+        xlabel('Number of lags', 'Interpreter', 'Latex');
+        ylabel('Auto-correlation', 'Interpreter', 'Latex');
+        legend('95% Confidence Interval');
+        grid on;
         if (save)
         saveas(gcf,[pwd,'\Plots\Cm_auto'],'epsc');
         end
@@ -74,18 +73,18 @@ function [] = validation_simplex(X_id, X_val, Y_id, Y_val, c_hat,...
         plotID = 5004;
         figure(plotID);
         subplot(121)
-        set(plotID, 'Position', [0 100 1500 500], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 18, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
-        bar(coef_simplex_idx, c_hat, 'b')
-        xlabel('Index [-]', 'Interpreter', 'Latex')
-        ylabel('Paramater Coefficient [-]', 'Interpreter', 'Latex')
-        legend(string(simplex_order)+ 'th order polynomial', 'location', 'northwest')
-        grid on
+        set(plotID, 'Position', [0 0 1500 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
+        bar(coef_simplex_idx, c_hat, 'b');
+        xlabel('Index [-]', 'Interpreter', 'Latex');
+        ylabel('Paramater Coefficient [-]', 'Interpreter', 'Latex');
+        legend(string(simplex_order)+ 'th order polynomial', 'location', 'northwest');
+        grid on;
 
         subplot(122)
-        bar(coef_idx, VAR, 'b')
-        xlabel('Index [-]', 'Interpreter', 'Latex')
-        ylabel('Coefficient Variance', 'Interpreter', 'Latex')
-        grid on
+        bar(coef_idx, VAR, 'b');
+        xlabel('Index [-]', 'Interpreter', 'Latex');
+        ylabel('Coefficient Variance', 'Interpreter', 'Latex');
+        grid on;
         if (save)
         saveas(gcf,[pwd,'\Plots\Simplex_ParVar'],'epsc');
         end

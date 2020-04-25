@@ -1,4 +1,5 @@
-function [z_pred, z_pred_correct, XX_k1k1, IEKFitcount, n] =  run_IEKF(U_k, Z_k, stdw, stdv, doIEKF)
+function [z_pred, z_pred_corr, XX_k1k1, IEKFitcount, n] = ...
+            run_IEKF(U_k, Z_k, stdw, stdv, IEKF)
     
     % Set simulation parameters
     dt              = 0.01;
@@ -6,7 +7,7 @@ function [z_pred, z_pred_correct, XX_k1k1, IEKFitcount, n] =  run_IEKF(U_k, Z_k,
     epsilon         = 1e-10;
     maxIterations   = 100;
 
-    %% Set Initial Values for States and Statistics
+    % Set Initial Values for States and Statistics
     Ex_0    = [Z_k(3,1); 0.5; 0.5; 0.5];  % initial estimate of optimal value of x_k_1k_1
     n       = length(stdw);         % number of states
     nm      = size(Z_k,1);          % number of measurements
@@ -15,7 +16,7 @@ function [z_pred, z_pred_correct, XX_k1k1, IEKFitcount, n] =  run_IEKF(U_k, Z_k,
     B       = eye(n);               % input matrix
     G       = eye(length(stdw));    % noise input matrix
 
-    %% Initial Estimate for Covariance Matrix
+    % Initial Estimate for Covariance Matrix
     stdx_0  = [sqrt(0.1), sqrt(0.1), sqrt(0.1), sqrt(0.1)];     % Convergence KF depends on this estimate!
     P_0     = diag(stdx_0.^2);                                  % Create diagonal covariance matrix
     
@@ -42,7 +43,7 @@ function [z_pred, z_pred_correct, XX_k1k1, IEKFitcount, n] =  run_IEKF(U_k, Z_k,
         [t, x_kk_1] = rk4(@kf_calc_f, x_k_1k_1, U_k(:,k), [ti tf]);
 
         % Prediction Output z(k+1|k)
-        z_kk_1 = kf_calc_h(0, x_kk_1, U_k(:,k));
+        z_kk_1      = kf_calc_h(0, x_kk_1, U_k(:,k));
         z_pred(:,k) = z_kk_1;
 
         % Calc Phi(k+1,k) and Gamma(k+1, k)
@@ -52,12 +53,12 @@ function [z_pred, z_pred_correct, XX_k1k1, IEKFitcount, n] =  run_IEKF(U_k, Z_k,
         [Phi, Gamma] = c2d(Fx, G, dt);
 
         % Prediction covariance matrix P(k+1|k)
-        P_kk_1 = Phi * P_k_1k_1 * Phi' + Gamma * Q * Gamma';
-        P_pred = diag(P_kk_1);
-        stdx_pred = sqrt(diag(P_kk_1));
+        P_kk_1      = Phi * P_k_1k_1 * Phi' + Gamma * Q * Gamma';
+        P_pred      = diag(P_kk_1);
+        stdx_pred   = sqrt(diag(P_kk_1));
 
         % Run the Iterated Extended Kalman Filter
-        if (doIEKF)
+        if (IEKF)
 
             % Iterative part
             eta2 = x_kk_1;
@@ -109,21 +110,22 @@ function [z_pred, z_pred_correct, XX_k1k1, IEKFitcount, n] =  run_IEKF(U_k, Z_k,
         end
 
         % Calculate covariance matrix of state estimation error
-        P_k_1k_1 = (eye(n) - K*Hx) * P_kk_1 * (eye(n) - K*Hx)' + K*R*K'; 
-        P_cor = diag(P_k_1k_1);
-        stdx_cor = sqrt(diag(P_k_1k_1));
+        P_k_1k_1    = (eye(n) - K*Hx) * P_kk_1 * (eye(n) - K*Hx)' + K*R*K'; 
+        P_cor       = diag(P_k_1k_1);
+        stdx_cor    = sqrt(diag(P_k_1k_1));
 
         % Next iteration
         ti = tf; 
         tf = tf + dt;
 
         % Store results
-        XX_k1k1(:,k) = x_k_1k_1;
-        %PP_k1k1(:,k) = P_k_1k_1;           
-        STDx_cor(:,k) = stdx_cor;
+        XX_k1k1(:,k)   = x_k_1k_1;
+        %PP_k1k1(:,k)   = P_k_1k_1;           
+        STDx_cor(:,k)  = stdx_cor;
     end
     
-    z_pred_correct = z_pred;
-    z_pred_correct(1,:) = z_pred_correct(1,:) ./ (1 + XX_k1k1(4, :));
+    % Correct for bias alpha
+    z_pred_corr = z_pred;
+    z_pred_corr(1,:) = z_pred_corr(1,:) ./ (1 + XX_k1k1(4, :));
     
 end 

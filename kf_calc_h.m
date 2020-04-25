@@ -5,8 +5,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function zpred = kf_calcHx(t, x, u)
     
-    n = size(x, 1);
-    zpred = zeros(3, 1);
+    n        = size(x, 1);
+    zpred    = zeros(3, 1);
     
     u = x(1); v = x(2); w = x(3); C = x(4);
     

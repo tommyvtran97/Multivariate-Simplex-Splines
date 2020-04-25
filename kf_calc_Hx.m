@@ -25,7 +25,7 @@ function Hx = kf_calcDHx(t, x, u)
     J33 = w / sqrt(u^2 + v^2 + w^2);
     J34 = 0;
     
-    Hx = [J11, J12, J13, J14;
+    Hx  = [J11, J12, J13, J14;
             J21, J22, J23, J24;
             J31, J32, J33, J34];
 
