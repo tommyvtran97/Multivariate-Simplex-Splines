@@ -17,6 +17,9 @@ max_polynomial_order    = 15;
 polynomial_order        = 10;
 max_simplex_order       = 15;
 simplex_order           = 10;
+simplex_spline_order    = 4;
+simplex_continuity      = 1;
+
 
 % Plotting Settings
 plot_kalman     = 0;
@@ -28,7 +31,7 @@ stdw    = [1e-3, 1e-3, 1e-3, 0];     % u, v, w and C
 stdv    = [0.035, 0.013, 0.110];     % alpha, beta and V
 
 %% Check for Observability prove that the Kalman Filter converges
-observability();
+%observability();
 
 %% Run Iterated Extended Kalman filter
 [z_pred,z_pred_corr, XX_k1k1, IEKFitcount, N_states] = ...
@@ -63,3 +66,5 @@ validation_simplex(X_id, X_val, Y_id, Y_val, c_hat,...
     simplex_order, max_simplex_order, plot_simplex, save)
 
 %% Run Simplex Spline
+[H, Tri, T] = simplex_spline(simplex_spline_order, simplex_continuity);
+[global_B] = global_B_matrix(simplex_spline_order, X_id, X_val, Tri, T);
