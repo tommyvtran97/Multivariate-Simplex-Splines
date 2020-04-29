@@ -18,8 +18,8 @@ polynomial_order        = 10;
 max_simplex_order       = 15;
 simplex_order           = 10;
 %max_spline_order        = 7;
-spline_order            = 1;
-spline_continuity       = 0;
+spline_order            = 10;
+spline_continuity       = 1;
 
 
 % Plotting Settings
@@ -29,8 +29,8 @@ plot_simplex    = 0;
 plot_spline     = 1;
 
 % Triangulation Settings
-num_triangles_x = 1;
-num_triangles_y = 1;
+num_triangles_x = 4;
+num_triangles_y = 4;
 
     
 % Standard deviation for the system noise and measurement noise statistics

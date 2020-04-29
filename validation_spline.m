@@ -6,6 +6,8 @@ function [] = validation_spline(order, Y_hat_spline, Y_val,...
         % Initalize Parameters
         Y_val = Y_val';
         residual = Y_val(global_idx_val) - Y_hat_spline;
+        RMSE = rms(residual.^2)
+        fprintf('RMS Simplex Spline %d\n', RMSE)
 
         conf = 1.96/sqrt(length(residual));
         [acx, lags] = xcorr(residual-mean(residual), 'coeff');

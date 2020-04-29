@@ -63,7 +63,7 @@ function [global_B_id, global_B_val, global_idx_val, Y_hat_spline,...
         H, zeros(size(H, 1), size(H,1))]);
     C1 = matrix_A(1:size(global_B_id,2), 1:size(global_B_id,2));
     c_spline = C1 * global_B_id' * Y_id(global_idx_id);
-    
+   
     % Calculate Variance
     COV = C1;   VAR = diag(C1);
    
