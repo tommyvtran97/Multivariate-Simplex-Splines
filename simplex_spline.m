@@ -1,7 +1,4 @@
-function [H, Tri, T] = simplex_spline(order, continuity)
-
-    num_triangles_x = 1;
-    num_triangles_y = 1;
+function [H, Tri, T] = simplex_spline(order, continuity, num_triangles_x, num_triangles_y)
 
     % Define the grid boundaries
     grid_begin_x    = -0.2;
@@ -17,9 +14,9 @@ function [H, Tri, T] = simplex_spline(order, continuity)
     [x, y]          = meshgrid(grid_begin_x: step_size_x : grid_end_x,...
                     grid_begin_y : step_size_y : grid_end_y);
 
-    Tri = delaunayTriangulation(x(:), y(:));
-    T = sort(sort(Tri.ConnectivityList, 2), 1);
-    multi_index = sorted_bcoefficient(order);
+    Tri             = delaunayTriangulation(x(:), y(:));
+    T               = sort(sort(Tri.ConnectivityList, 2), 1);
+    multi_index     = sorted_bcoefficient(order);
 
     plotID = 6001;
     figure(plotID); 
@@ -28,14 +25,15 @@ function [H, Tri, T] = simplex_spline(order, continuity)
     set(gca, 'Color', [0.941, 0.941, 0.941]);
     set(gca, 'XTick', [], 'YTIck', [],'XTickLabel',[],'YTickLabel',[]);
     trimesh(T, x, y, [], 'EdgeColor', 'b', 'LineWidth', 2);
-    %title(sprintf('B-net (%d B-coefficients) for degree %d basis',size(multi_index,1), simplex_order), 'fontsize', 16)
-
+    
+    % Add vertex labels
     vertices = Tri.Points;
     for i = 1:size(vertices, 1)
         vertex_label = (['v_', num2str(i-0)]);
         text(vertices(i,1)+0.010, vertices(i,2), vertex_label, 'Color', 'red', 'FontSize', 15);
     end
-
+    
+    % Add B-coefficient labels
     B_cart = [];
     for i = 1:size(T, 1)
         BaryC = multi_index / order;
@@ -59,14 +57,17 @@ function [H, Tri, T] = simplex_spline(order, continuity)
             pos_y = -0.013;
         end
     end
-
+    
+    % Implement Smoothness Matrix 
+    %% TODO: high order continuity & multi simplices
     H = [];
+    
     for order=0:1:continuity
 
-        % Permutations Left Hand Side
+        % Permutations left hand side
         multi_index_LH = multi_index(find(multi_index(:,1) == order), :);
 
-        % Permutation Right Hand Side
+        % Permutation right hand side
         gamma = sorted_bcoefficient(order);
         zero_vector = zeros(size(multi_index_LH, 1), 1);
         matrix_RH  = horzcat(multi_index_LH(:,2), multi_index_LH(:,3), zero_vector);
@@ -78,21 +79,18 @@ function [H, Tri, T] = simplex_spline(order, continuity)
             end
         end 
 
-        % Create Smoothness Matrix
+        % Create smoothness matrix
         smooth_matrix = zeros(size(multi_index_LH, 1), size(multi_index, 1)*2);
-
+        
         OOE_V1 = Tri.Points(T(1,1), :);
-        OOE_V2 = Tri.Points(T(2,3), :);
-
-        [~, OOE_BaryV1] = tsearchn(Tri.Points,T(1,:), OOE_V1);
-        [~, OOE_BaryV2] = tsearchn(Tri.Points,T(2,:), OOE_V2);
-
+        OOE_BaryV1 = bsplinen_cart2bary(Tri.Points(T(2,:),:), OOE_V1);
+        
+        % Store result into smoothness matrix
         index = 1;
         k = 1;
         for i=1:1:size(multi_index_LH, 1)
             [~, idx_left] = ismember(multi_index_LH(i,:), multi_index, 'rows');
             smooth_matrix(i, idx_left) = -1;
-
 
             for j=index:1:size(multi_index_RH, 1)
                     [~, idx_right] = ismember(multi_index_RH(j,:), multi_index, 'rows');
@@ -108,6 +106,7 @@ function [H, Tri, T] = simplex_spline(order, continuity)
                     k = k + 1;
             end
         end
+        % Concatenate smoothness matrix vertically
         H = vertcat(H, smooth_matrix);
     end
 end
