@@ -57,7 +57,7 @@ function [global_B_id, global_B_val, global_idx_val, Y_hat_spline,...
         global_B_val    = blkdiag(global_B_val, global_Bx_val);
       
     end
-    
+
     % Equality Constraint OLS Estimator
     matrix_A = pinv([global_B_id' * global_B_id, H'; ...
         H, zeros(size(H, 1), size(H,1))]);
@@ -73,7 +73,7 @@ function [global_B_id, global_B_val, global_idx_val, Y_hat_spline,...
     % Check Continuity Condition
     epsilon = 10^(-4);
     if (max(H*c_spline)) < epsilon
-        fprintf('Continuity Satified!\n')
+        %fprintf('Continuity Satified!\n')
     else
         fprintf('Continuity Failed!\n')
     end

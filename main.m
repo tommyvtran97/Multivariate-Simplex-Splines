@@ -17,16 +17,17 @@ max_polynomial_order    = 15;
 polynomial_order        = 10;
 max_simplex_order       = 15;
 simplex_order           = 10;
-%max_spline_order        = 7;
-spline_order            = 1;
-spline_continuity       = 0;
-
+max_spline_order        = 3;
+max_continuity          = max_spline_order - 1;
+spline_order            = 3;
+spline_continuity       = 1;
 
 % Plotting Settings
 plot_kalman     = 0;
 plot_OLS        = 0;
 plot_simplex    = 0;
 plot_spline     = 1;
+plot_validation = 0;
 
 % Triangulation Settings
 num_triangles_x = 1;
@@ -58,7 +59,7 @@ expo = create_polynomial(polynomial_order);
 % OLS Plots & Validation of Model
 OLS_plot(X_val, Y_val, Y_hat_val, plot_OLS, save)
 validation_polynomial(X_id, Y_id, X_val, Y_val, ...
-    polynomial_order, max_polynomial_order, plot_OLS, save)
+    polynomial_order, max_polynomial_order, plot_validation, save)
 
 %% Run Simplex Polynomial
 [TRI, PHI, Bx_val, c_hat, X_val_simplex, Y_val_simplex, Yb_hat_val, residual, RMSE] = ...
@@ -70,17 +71,24 @@ simplex_plot(TRI, PHI, X_id, Y_id, X_val_simplex, Y_val_simplex, Yb_hat_val,...
     simplex_order, plot_simplex, save);
     
 validation_simplex(X_id, X_val_simplex, Y_id, Y_val_simplex, c_hat,...
-    simplex_order, max_simplex_order, plot_simplex, save)
+    simplex_order, max_simplex_order, plot_validation, save)
 
 %% Run Simplex Spline
-[H, Tri, T] = simplex_continuity(spline_order, spline_continuity,...
-    num_triangles_x, num_triangles_y);
 
-[global_B_id, global_B_val, global_idx_val Y_hat_spline, c_spline, VAR]...
-    = global_B_matrix(spline_order, X_id, Y_id, X_val, Tri, T, H);
+% Fixed continuity and varying polynomial degree model performance
+[global_B_id, global_B_val, global_idx_val Y_hat_spline, c_spline, VAR, RMSE_x, RMSE_y, H, Tri, T] = simplex_continuity1(spline_order, spline_continuity,...
+    num_triangles_x, num_triangles_y, X_id, Y_id, X_val, Y_val, max_spline_order, plot_spline);
+
+% Fixed polynomial degree and varying continuity model performance
+[global_B_id, global_B_val, global_idx_val Y_hat_spline, c_spline, VAR, RMSE_x_cont, RMSE_y_cont, H, Tri, T] = simplex_continuity2(spline_order, max_continuity,...
+    num_triangles_x, num_triangles_y, X_id, Y_id, X_val, Y_val, max_spline_order, plot_spline);
+
+% Fixed continuity and polynomial degree
+[global_B_id, global_B_val, global_idx_val Y_hat_spline, c_spline, VAR, H, Tri, T] = simplex_continuity3(spline_order, spline_continuity,...
+    num_triangles_x, num_triangles_y, X_id, Y_id, X_val, Y_val, max_spline_order, plot_spline);
 
 % Simplex Spline Plots & Validation of Model
 spline_plot(spline_order, X_id, Y_id, X_val, Y_val,...
     Y_hat_spline, plot_spline, save);
 validation_spline(spline_order, Y_hat_spline, ...
-    Y_val,global_B_val, global_idx_val, c_spline, VAR, plot_spline, save);
+    Y_val,global_B_val, global_idx_val, c_spline, VAR, RMSE_x, RMSE_y, RMSE_x_cont, RMSE_y_cont, plot_validation, save);

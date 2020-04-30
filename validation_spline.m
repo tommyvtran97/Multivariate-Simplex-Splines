@@ -1,13 +1,11 @@
 function [] = validation_spline(order, Y_hat_spline, Y_val,...
-    global_B_val, global_idx_val, c_spline, VAR, plot_spline, save)
+    global_B_val, global_idx_val, c_spline, VAR, RMSE_x, RMSE_y, RMSE_x_cont, RMSE_y_cont, plot_spline, save)
     
     if plot_spline 
         
         % Initalize Parameters
         Y_val = Y_val';
         residual = Y_val(global_idx_val) - Y_hat_spline;
-        RMSE = rms(residual.^2)
-        fprintf('RMS Simplex Spline %d\n', RMSE)
 
         conf = 1.96/sqrt(length(residual));
         [acx, lags] = xcorr(residual-mean(residual), 'coeff');
@@ -15,19 +13,31 @@ function [] = validation_spline(order, Y_hat_spline, Y_val,...
         coef_idx = 1:1:size(VAR, 1);
         coef_simplex_idx = 1:1:size(global_B_val, 2);
 
-    %     plotID = 5001;
-    %     figure(plotID);
-    %     set(plotID, 'Position', [0 0 600 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
-    %     plot(RMSE_x, RMSE_y, 'b^-', 'MarkerSize', 11, 'MarkerFaceColor',[0 0 1])
-    %     ylabel('Root Mean Squared Error (RMSE) [-]','interpreter','latex');
-    %     xlabel('Polynomial Degree [-]','interpreter','latex');
-    %     legend('Validation Dataset Accuracy', 'location', 'northwest','interpreter','latex');
-    %     grid on;
-    %     if (save)
-    %     saveas(gcf,[pwd,'\Plots\simplex_rms'],'epsc');
-    %     end
-
         plotID = 6003;
+        figure(plotID);
+        set(plotID, 'Position', [0 0 600 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
+        plot(RMSE_x, RMSE_y, 'b^-', 'MarkerSize', 11, 'MarkerFaceColor',[0 0 1])
+        ylabel('Root Mean Squared Error (RMSE) [-]','interpreter','latex');
+        xlabel('Polynomial Degree [-]','interpreter','latex');
+        legend('Continuity 1', 'location', 'northwest','interpreter','latex');
+        grid on;
+        if (save)
+        saveas(gcf,[pwd,'\Plots\spline_rms_poly'],'epsc');
+        end
+        
+        plotID = 6004;
+        figure(plotID);
+        set(plotID, 'Position', [0 0 600 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
+        plot(RMSE_x_cont, RMSE_y_cont, 'b^-', 'MarkerSize', 11, 'MarkerFaceColor',[0 0 1])
+        ylabel('Root Mean Squared Error (RMSE) [-]','interpreter','latex');
+        xlabel('Continuity [-]','interpreter','latex');
+        legend('Polynomial Degree 7', 'location', 'northwest','interpreter','latex');
+        grid on;
+        if (save)
+        saveas(gcf,[pwd,'\Plots\spline_rms_cont'],'epsc');
+        end
+
+        plotID = 6005;
         figure(plotID);
         set(plotID, 'Position', [0 0 600 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
         nbins = 50;
@@ -37,10 +47,10 @@ function [] = validation_spline(order, Y_hat_spline, Y_val,...
         legend(string(order) + 'th order spline', 'location', 'northwest');
         grid on;
         if (save)
-        saveas(gcf,[pwd,'\Plots\Cm_normal'],'epsc');
+        saveas(gcf,[pwd,'\Plots\Cm_normal_spline'],'epsc');
         end
 
-        plotID = 6004;
+        plotID = 6006;
         figure(plotID);
         set(plotID, 'Position', [0 0 600 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
         hold on;
@@ -52,10 +62,10 @@ function [] = validation_spline(order, Y_hat_spline, Y_val,...
         legend('95% Confidence Interval');
         grid on;
         if (save)
-        saveas(gcf,[pwd,'\Plots\Cm_auto'],'epsc');
+        saveas(gcf,[pwd,'\Plots\Cm_auto_spline'],'epsc');
         end
 
-        plotID = 6005;
+        plotID = 6007;
         figure(plotID);
         subplot(121)
         set(plotID, 'Position', [0 0 1500 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
@@ -71,7 +81,7 @@ function [] = validation_spline(order, Y_hat_spline, Y_val,...
         ylabel('Coefficient Variance', 'Interpreter', 'Latex');
         grid on;
         if (save)
-        saveas(gcf,[pwd,'\Plots\Simplex_ParVar'],'epsc');
+        saveas(gcf,[pwd,'\Plots\Spline_ParVar'],'epsc');
         end
         
     end
