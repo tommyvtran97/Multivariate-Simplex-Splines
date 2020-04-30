@@ -25,7 +25,6 @@ function [global_B_id, global_B_val, global_idx_val Y_hat_spline, c_spline, VAR,
         vertex_index = vertcat(vertex_index, multi_index);
     end
     %--------------------------------------------------------------------------------------------    
-
     % Find all the edges for continuity
     int_edges = setdiff(sort(edges(Tri),2), sort(freeBoundary(Tri),2), 'rows');
 

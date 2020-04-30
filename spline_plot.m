@@ -1,5 +1,5 @@
 function [] = spline_plot(order, X_id, Y_id, X_val, Y_val,...
-    Y_hat_spline, plot_spline, save)
+    Y_hat_spline, global_idx_val, plot_spline, save)
     
     if plot_spline
     
@@ -14,6 +14,7 @@ function [] = spline_plot(order, X_id, Y_id, X_val, Y_val,...
         el      = 36;
 
         % Create triangulation
+        Tri_spline = delaunayn(X_val(global_idx_val, [1 2]));
         Tri_val = delaunayn(X_val(:, [1 2]));
 
         plotID = 6002;
@@ -21,8 +22,8 @@ function [] = spline_plot(order, X_id, Y_id, X_val, Y_val,...
         set(plotID, 'Position', [0 0 1500 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
         subplot(121);
         hold on;
-        trisurf(Tri_val, X_val(:,1), X_val(:,2), Y_hat_spline, 'EdgeColor', 'none'); 
-        plot3(X_val(:,1), X_val(:,2), Y_val, '.k');
+        trisurf(Tri_spline, X_val(global_idx_val,1), X_val(global_idx_val,2), Y_hat_spline, 'EdgeColor', 'none'); 
+        plot3(X_val(global_idx_val,1), X_val(global_idx_val,2), Y_val(global_idx_val), '.k');
         ylabel('beta [rad]');
         xlabel('alpha [rad]');
         zlabel('C_m [-]');

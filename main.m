@@ -9,7 +9,7 @@ load(dataname, 'Cm', 'Z_k', 'U_k');
 Cm = Cm'; Z_k = Z_k'; U_k = U_k';
 
 % Settings
-save = 0;
+save = 1;
 IEKF = 1;
 
 % Multivariate Spline Setting
@@ -17,17 +17,17 @@ max_polynomial_order    = 15;
 polynomial_order        = 10;
 max_simplex_order       = 15;
 simplex_order           = 10;
-max_spline_order        = 3;
+max_spline_order        = 7;
 max_continuity          = max_spline_order - 1;
-spline_order            = 3;
+spline_order            = 4;
 spline_continuity       = 1;
 
 % Plotting Settings
-plot_kalman     = 0;
-plot_OLS        = 0;
-plot_simplex    = 0;
+plot_kalman     = 1;
+plot_OLS        = 1;
+plot_simplex    = 1;
 plot_spline     = 1;
-plot_validation = 0;
+plot_validation = 1;
 
 % Triangulation Settings
 num_triangles_x = 1;
@@ -89,6 +89,6 @@ validation_simplex(X_id, X_val_simplex, Y_id, Y_val_simplex, c_hat,...
 
 % Simplex Spline Plots & Validation of Model
 spline_plot(spline_order, X_id, Y_id, X_val, Y_val,...
-    Y_hat_spline, plot_spline, save);
+    Y_hat_spline, global_idx_val, plot_spline, save);
 validation_spline(spline_order, Y_hat_spline, ...
     Y_val,global_B_val, global_idx_val, c_spline, VAR, RMSE_x, RMSE_y, RMSE_x_cont, RMSE_y_cont, plot_validation, save);
