@@ -1,17 +1,9 @@
-function [global_B_id, global_B_val, global_idx_val Y_hat_spline,...
-    c_spline, VAR, RMSE_x, RMSE_y] = simplex_continuity(spline_order,...
-    continuity, X_id, Y_id, X_val, Y_val, plot_spline)
+function [global_B_id, global_B_val, global_idx_val Y_hat_spline, c_spline, VAR, RMSE_x_simp, RMSE_y_simp] = simplex_continuity(spline_order, max_continuity, max_simplices_xy, X_id, Y_id, X_val, Y_val, max_spline_order, plot_spline)
 
-    % Initialize Parameters
-    Y_val_old = Y_val;
-    RMSE_x = [];
-    RMSE_y = [];
-    
-    num_triangles_x = 1;
-    num_triangles_y = 1;
+    RMSE_x_simp = [];
+    RMSE_y_simp = [];
 
-    for order=continuity+1:1:10
-
+    for simplex=1:1:max_simplices_xy
         % Define the grid boundaries
         grid_begin_x    = -0.2;
         grid_begin_y    = -0.2;
@@ -19,8 +11,8 @@ function [global_B_id, global_B_val, global_idx_val Y_hat_spline,...
         grid_end_y      = 0.2;
 
         % Create Step Size
-        step_size_x     = (grid_end_x - grid_begin_x)/num_triangles_x;
-        step_size_y     = (grid_end_y - grid_begin_y)/num_triangles_y;
+        step_size_x     = (grid_end_x - grid_begin_x)/simplex;
+        step_size_y     = (grid_end_y - grid_begin_y)/simplex;
 
         % Create Grid 
         [x, y]          = meshgrid(grid_begin_x: step_size_x : grid_end_x,...
@@ -28,7 +20,7 @@ function [global_B_id, global_B_val, global_idx_val Y_hat_spline,...
 
         Tri             = delaunayTriangulation(x(:), y(:));
         T               = sort(Tri.ConnectivityList, 2);
-        multi_index     = sorted_bcoefficient(order);
+        multi_index     = sorted_bcoefficient(max_spline_order);
         vertices        = Tri.Points;
 
         % Create index vector for all triangles
@@ -36,6 +28,7 @@ function [global_B_id, global_B_val, global_idx_val Y_hat_spline,...
         for i=1:1:size(T,1)
             vertex_index = vertcat(vertex_index, multi_index);
         end
+        %--------------------------------------------------------------------------------------------    
 
         % Find all the edges for continuity
         int_edges = setdiff(sort(edges(Tri),2), sort(freeBoundary(Tri),2), 'rows');
@@ -63,10 +56,10 @@ function [global_B_id, global_B_val, global_idx_val Y_hat_spline,...
             end
         end
 
-       % Calculate for each set of triangles the out of edge vertex
-       OOE_vertex_bary_1 = [];
-       OOE_vertex_bary_2 = [];
-       for i=1:1:size(triangle_edge_list, 1)
+        % Calculate for each set of triangles the out of edge vertex
+        OOE_vertex_bary_1 = [];
+        OOE_vertex_bary_2 = [];
+        for i=1:1:size(triangle_edge_list, 1)
            triangle_1 = vertices(T(triangle_edge_list(i, 1), :), :);
            triangle_2 = vertices(T(triangle_edge_list(i, 2), :), :);
 
@@ -80,12 +73,12 @@ function [global_B_id, global_B_val, global_idx_val Y_hat_spline,...
 
            OOE_vertex_bary_1 = vertcat(OOE_vertex_bary_1, OOE_bary_1);
            OOE_vertex_bary_2 = vertcat(OOE_vertex_bary_2, OOE_bary_2);
-       end 
+        end 
 
-       % Calculate correct out of edge index to use Boor's continuity equation
-       index_OOE = [];
-       index_list = [];
-       for i=1:1:size(triangle_edge_list, 1)
+        % Calculate correct out of edge index to use Boor's continuity equation
+        index_OOE = [];
+        index_list = [];
+        for i=1:1:size(triangle_edge_list, 1)
            for j=1:1:size(triangle_edge_list, 2)
                for k =1:1:size(OOE_vertex_bary_1, 2)
                    if T(triangle_edge_list(i, j), k) ~= int_edges(i,1) && T(triangle_edge_list(i, j), k) ~= int_edges(i,2)
@@ -95,15 +88,15 @@ function [global_B_id, global_B_val, global_idx_val Y_hat_spline,...
            end
            index_OOE = vertcat(index_OOE, index_list);
            index_list = [];
-       end
+        end
 
-       % Implement smoothness matrix
-       H = [];
+        % Implement smoothness matrix
+        H = [];
 
-       for i=1:1:size(int_edges, 1)
+        for i=1:1:size(int_edges, 1)
            size_LH = size(multi_index, 1) * (triangle_edge_list(i, 1)-1);
            size_RH = size(multi_index, 1) * (triangle_edge_list(i, 2)-1);
-           for order_continuity=0:1:continuity
+           for order_continuity=0:1:max_continuity
 
                 % Permutations left hand side
                 multi_index_LH = multi_index(find(multi_index(:,index_OOE(i,1)) == order_continuity), :);
@@ -181,33 +174,18 @@ function [global_B_id, global_B_val, global_idx_val Y_hat_spline,...
                 H = vertcat(H, smooth_matrix);
 
            end
-       end
+        end
 
-       % Create global B regression matrix
-       [global_B_id, global_B_val, global_idx_val, Y_hat_spline, c_spline, VAR]...
-        = global_B_matrix(order, X_id, Y_id, X_val, Tri, T, H);
+        % Create global B regression matrix
+        [global_B_id, global_B_val, global_idx_val, Y_hat_spline, c_spline, VAR]...
+        = global_B_matrix(max_spline_order, X_id, Y_id, X_val, Tri, T, H);
 
-       Y_val = Y_val';
-       residual = Y_val(global_idx_val) - Y_hat_spline;
-
-       RMSE = rms(residual);
-       RMSE_x = [RMSE_x, order];
-       RMSE_y = [RMSE_y, RMSE];
-
-       Y_val = Y_val';
-
+        residual = Y_val(global_idx_val)' - Y_hat_spline;
+        RMSE = rms(residual);
+        
+        counter = simplex*simplex*2;
+        
+        RMSE_x_simp = [RMSE_x_simp, counter];
+        RMSE_y_simp = [RMSE_y_simp, RMSE];
     end
-
 end
-
-    
-
-          
-
-
-
-
-
-
-
-

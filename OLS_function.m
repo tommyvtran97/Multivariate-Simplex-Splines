@@ -1,7 +1,10 @@
-function [Y_hat_val, theta_hat, Ax_val] = OLS_function(X_id, Y_id, X_val, expo)
+function [Y_hat_val, theta_hat, Ax_val] = OLS_function(polynomial_order, X_id, Y_id, X_val)
     
     % Transpose matrice
     Y_id = Y_id';
+    
+    % Create exponential matrix
+    expo = create_polynomial(polynomial_order);
     
     % Initialize regression matrix
     Ax_id  = zeros(size(X_id, 2), size(expo, 2));

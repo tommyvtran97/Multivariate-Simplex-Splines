@@ -6,7 +6,6 @@ function [TRI, PHI, Bx_val, c_hat, X_val, Y_val, Yb_hat_val, residual, RMSE] = .
     beta_m  = X_id(2,:);
     X_id    = X_id';
     X_val   = X_val';
-    Y_old   = Y_id;
     
     % Define simplex vertices
     PHI = [0.8 -0.2 ; -0.2 -0.2; -0.2 0.2];
@@ -62,6 +61,6 @@ function [TRI, PHI, Bx_val, c_hat, X_val, Y_val, Yb_hat_val, residual, RMSE] = .
     
     % Calculate residual and RMSE
     residual = (Y_val - Yb_hat_val);
-    RMSE = rms(residual.^2);
+    RMSE = rms(residual);
 
 end 

@@ -1,25 +1,24 @@
 function [] = validation_polynomial(X_id, Y_id, X_val, Y_val,...
-    polynomial_order, max_polynomial_order, plot_result, save)
+    polynomial_order, max_polynomial_order, plot_result, plot_validation, save)
     
     if (plot_result)
- 
-        RMSE_x = [];
-        RMSE_y = [];
+        
+        if plot_validation
+            RMSE_x = [];
+            RMSE_y = [];
 
-        for order=1:1:max_polynomial_order
-            expo = create_polynomial(order);
-            [Y_hat_val, theta_hat, Ax_val] = OLS_function(X_id, Y_id, X_val, expo);
+            for order=1:1:max_polynomial_order
+                [Y_hat_val, theta_hat, Ax_val] = OLS_function(order,X_id, Y_id, X_val);
 
-            residual  = (Y_val - Y_hat_val).^2;
-            RMSE = rms(residual);
+                residual  = (Y_val - Y_hat_val);
+                RMSE = rms(residual);
 
-            RMSE_x = [RMSE_x, order];
-            RMSE_y = [RMSE_y, RMSE];
+                RMSE_x = [RMSE_x, order];
+                RMSE_y = [RMSE_y, RMSE];
+            end
         end
-
-        expo = create_polynomial(polynomial_order);
-        [Y_hat_val, theta_hat, Ax_val] = OLS_function(X_id, Y_id, X_val, expo);
-
+        
+        [Y_hat_val, theta_hat, Ax_val] = OLS_function(polynomial_order, X_id, Y_id, X_val);
         residual = (Y_val - Y_hat_val)';
 
         conf = 1.96/sqrt(length(residual));
@@ -32,33 +31,35 @@ function [] = validation_polynomial(X_id, Y_id, X_val, Y_val,...
 
         coef_idx = 1:1:size(VAR, 1);
         coef_OLS_idx = 1:1:size(theta_hat, 1);
+        
+        if plot_validation
+            plotID = 3001;
+            figure(plotID);
+            set(plotID, 'Position', [0 0 1500 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
+            subplot(121)
+            nbins = 50;
+            histogram(residual, nbins);
+            xlabel('Residual $C_m$','interpreter','latex');
+            ylabel('Number of residuals','interpreter','latex');
+            legend(string(polynomial_order) + 'th order polynomial', 'location', 'northwest');
+            grid on;
 
-        plotID = 3001;
-        figure(plotID);
-        set(plotID, 'Position', [0 0 600 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
-        plot(RMSE_x, RMSE_y, 'b^-', 'MarkerSize', 11, 'MarkerFaceColor',[0 0 1]);
-        ylabel('Root Mean Squared Error (RMSE) [-]','interpreter','latex');
-        xlabel('Polynomial Degree [-]','interpreter','latex');
-        legend('Validation Dataset Accuracy', 'location', 'northwest','interpreter','latex');
-        grid on;
-        if (save)
-        saveas(gcf,[pwd,'\Plots\OLS_accuracy'],'epsc');
+            subplot(122)
+            plot(RMSE_x, RMSE_y, 'b^-', 'MarkerSize', 11, 'MarkerFaceColor',[0 0 1]);
+            xlabel('Polynomial order [-]','interpreter','latex');
+            ylabel('Root mean square error (RMSE) [-]','interpreter','latex');
+            ylim([0.007 0.016]);
+            legend('Validation Dataset', 'location', 'northwest');
+            grid on;
+            if (save)
+                figpath = 'Plots/';
+                fpath = sprintf('OLS_residual_rms');
+                savefname = strcat(figpath, fpath);
+                print(plotID, '-depsc', '-r300', savefname);
+            end
         end
-
+        
         plotID = 3002;
-        figure(plotID);
-        set(plotID, 'Position', [0 0 600 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
-        nbins = 50;
-        histogram(residual, nbins);
-        ylabel('Number of Residuals','interpreter','latex');
-        xlabel('Residual $C_m$','interpreter','latex');
-        legend(string(polynomial_order) + 'th order polynomial', 'location', 'northwest');
-        grid on;
-        if (save)
-        saveas(gcf,[pwd,'\Plots\Cm_normal'],'epsc');
-        end
-
-        plotID = 3003;
         figure(plotID);
         set(plotID, 'Position', [0 0 600 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
         hold on;
@@ -70,26 +71,32 @@ function [] = validation_polynomial(X_id, Y_id, X_val, Y_val,...
         legend('95% Confidence Interval');
         grid on;
         if (save)
-        saveas(gcf,[pwd,'\Plots\Cm_auto'],'epsc');
+            figpath = 'Plots/';
+            fpath = sprintf('Cm_auto_simple');
+            savefname = strcat(figpath, fpath);
+            print(plotID, '-depsc', '-r300', savefname);
         end
 
-        plotID = 3004;
+        plotID = 3003;
         figure(plotID);
         subplot(121)
         set(plotID, 'Position', [0 0 1500 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
         bar(coef_OLS_idx, theta_hat, 'b');
         xlabel('Index [-]', 'Interpreter', 'Latex');
-        ylabel('Paramater Coefficient [-]', 'Interpreter', 'Latex');
+        ylabel('Paramater coefficient [-]', 'Interpreter', 'Latex');
         legend(string(polynomial_order)+ 'th order polynomial', 'location', 'northwest');
         grid on;
 
         subplot(122)
         bar(coef_idx, VAR, 'b');
         xlabel('Index [-]', 'Interpreter', 'Latex');
-        ylabel('Coefficient Variance', 'Interpreter', 'Latex');
+        ylabel('Coefficient variance', 'Interpreter', 'Latex');
         grid on;
         if (save)
-        saveas(gcf,[pwd,'\Plots\OLS_ParVar'],'epsc');
+            figpath = 'Plots/';
+            fpath = sprintf('OLS_ParVar');
+            savefname = strcat(figpath, fpath);
+            print(plotID, '-depsc', '-r300', savefname);
         end
     end
     

@@ -1,6 +1,7 @@
-function [] = OLS_plot(X_val, Y_val, Y_hat_val, plot_OLS, save)
+function [] = OLS_plot(order, X_val, Y_val, Y_hat_val, plot_OLS, save)
     
     if (plot_OLS)
+        
         % Initialize parameters
         Z_k         = X_val';
         alpha_m     = Z_k(:, 1);
@@ -10,10 +11,6 @@ function [] = OLS_plot(X_val, Y_val, Y_hat_val, plot_OLS, save)
         residual    = (Y_val - Y_hat_val)';
 
         TRIeval = delaunayn(Z_k(:, [1 2]));
-
-        % Initialize viewing angle
-        az = 140;
-        el = 36;
 
         % Create figures
         plotID = 2001;
@@ -26,8 +23,8 @@ function [] = OLS_plot(X_val, Y_val, Y_hat_val, plot_OLS, save)
         ylabel('beta [rad]');
         xlabel('alpha [rad]');
         zlabel('C_m [-]');
-        title('F16 CM(\alpha_m, \beta_m) OLS Simple Polynomial Model');
-        view(az, el);
+        title('F16 CM(\alpha_m, \beta_m) simple polynomial model of ' + string(order) + 'th order');
+        view(140, 36);
         grid on;
 
         % Set fancy options for plotting 
@@ -48,7 +45,7 @@ function [] = OLS_plot(X_val, Y_val, Y_hat_val, plot_OLS, save)
         xlabel('alpha [rad]');
         zlabel('C_m [-]');
         title('F16 CM(\alpha_m, \beta_m) raw interpolation');
-        view(az, el);
+        view(140, 36);
         grid on;
 
         % Set fancy options for plotting 
@@ -61,9 +58,11 @@ function [] = OLS_plot(X_val, Y_val, Y_hat_val, plot_OLS, save)
         lighting phong;
         drawnow();
         if (save)
-        saveas(gcf,[pwd,'\Plots\OLS_3D'],'epsc');
+            figpath = 'Plots/';
+            fpath = sprintf('3D_OLS');
+            savefname = strcat(figpath, fpath);
+            print(plotID, '-depsc', '-r300', savefname);
         end 
     end
-    
 
 end 

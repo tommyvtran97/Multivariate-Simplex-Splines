@@ -9,10 +9,6 @@ function [] = spline_plot(order, X_id, Y_id, X_val, Y_val,...
         Y_id    = Y_id';
         Y_val   = Y_val';
 
-        % Initialize viewing angle
-        az      = 140;
-        el      = 36;
-
         % Create triangulation
         Tri_spline = delaunayn(X_val(global_idx_val, [1 2]));
         Tri_val = delaunayn(X_val(:, [1 2]));
@@ -27,8 +23,8 @@ function [] = spline_plot(order, X_id, Y_id, X_val, Y_val,...
         ylabel('beta [rad]');
         xlabel('alpha [rad]');
         zlabel('C_m [-]');
-        title('F16 CM(\alpha_m, \beta_m) Simplex Spline Order ' + string(order));
-        view(az, el);
+        title('F16 CM(\alpha_m, \beta_m) simplex spline polynomial of ' + string(order) + 'th order');
+        view(140, 36);
         grid on;
 
         % Set fancy options for plotting 
@@ -49,7 +45,7 @@ function [] = spline_plot(order, X_id, Y_id, X_val, Y_val,...
         xlabel('alpha [rad]');
         zlabel('C_m [-]');
         title('F16 CM(\alpha_m, \beta_m) raw interpolation');
-        view(az, el);
+        view(140, 36);
         grid on;
 
         % Set fancy options for plotting 
@@ -62,7 +58,10 @@ function [] = spline_plot(order, X_id, Y_id, X_val, Y_val,...
         lighting phong;
         drawnow();
         if (save)
-        saveas(gcf,[pwd,'\Plots\3D_spline'],'epsc');
+            figpath = 'Plots/';
+            fpath = sprintf('3D_spline');
+            savefname = strcat(figpath, fpath);
+            print(plotID, '-depsc', '-r300', savefname);
         end
         
     end
