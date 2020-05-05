@@ -1,8 +1,10 @@
-function [] = spline_plot(order, X_id, Y_id, X_val, Y_val,...
-    Y_hat_spline, global_idx_val, plot_spline, save)
+function [] = spline_plot(order, continuity, X_id, Y_id, X_val, Y_val,...
+    Y_hat_spline, global_idx_val, T, x, y, vertices, RMSE, plot_spline, save)
+    
+    fprintf('Spline order %d and continuity %d RMS: %d\n', order, continuity, RMSE);
     
     if plot_spline
-    
+        
         % Initialize Parameters
         X_id    = X_id';
         X_val   = X_val';
@@ -12,6 +14,71 @@ function [] = spline_plot(order, X_id, Y_id, X_val, Y_val,...
         % Create triangulation
         Tri_spline = delaunayn(X_val(global_idx_val, [1 2]));
         Tri_val = delaunayn(X_val(:, [1 2]));
+        
+        multi_index     = sorted_bcoefficient(order);
+        
+        % Create index vector for all triangles
+        vertex_index = [];
+        for i=1:1:size(T,1)
+            vertex_index = vertcat(vertex_index, multi_index);
+        end
+   
+        plotID = 6001;
+        figure(plotID); 
+        hold on;
+        set(plotID, 'Position', [0 0 600 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
+        set(gca, 'Color', [0.941, 0.941, 0.941]);
+        set(gca, 'XTick', [], 'YTIck', [],'XTickLabel',[],'YTickLabel',[]);
+        trimesh(T, x, y, [], 'EdgeColor', 'b', 'LineWidth', 2);
+
+       % Add vertex labels
+        for i = 1:size(vertices, 1)
+            vertex_label = (['v_{', num2str(i-0),'}']);
+            text(vertices(i,1)+0.010, vertices(i,2), vertex_label, 'Color', 'red', 'FontSize', 15);
+        end
+
+        % Add B-coefficient labels
+        B_cart = [];
+        for i = 1:size(T, 1)
+            BaryC = multi_index / order;
+            simplex_coords  = vertices(T(i, :), :);
+            B_cart          = vertcat([B_cart; bsplinen_bary2cart(simplex_coords, BaryC)]);
+        end
+        
+        j = 0;
+        pos_x = -0.01;
+        pos_y = -0.01;
+        count = 0 ;
+        for i = 1:1:size(B_cart, 1)
+            j = j + 1;
+            count = count + 1;
+            plot(B_cart(i,1), B_cart(i,2), '.g', 'Markersize', 20)
+            B_label = (['c_{' + string(vertex_index(j,1)) + ',' + ...
+                string(vertex_index(j,2)) + ',' + string(vertex_index(j,3)) + '}']);
+            text(B_cart(i,1)-pos_x, B_cart(i,2)-pos_y, B_label, 'Color', 'black', 'FontSize', 12);
+            
+            if count == size(multi_index, 1)
+                pos_x = -pos_x;
+                pos_y = -pos_y;
+                count = 0;
+            end
+        end
+
+        % Add triangle labels
+        for k = 1:size(T,1)
+            triangle_x = mean(vertices(T(k,:), 1));
+            triangle_y = mean(vertices(T(k,:), 2));
+            triangle_label = (['t_{', num2str(k-0), '}']);
+            text(triangle_x, triangle_y, triangle_label, 'Color', 'black', 'FontSize', 15');
+        end
+
+        if save
+            figpath = 'Plots/';
+            fpath = sprintf('Spline_triangulation');
+            savefname = strcat(figpath, fpath);
+            print(plotID, '-depsc', '-r300', savefname);
+        end
+
 
         plotID = 6002;
         figure(plotID);

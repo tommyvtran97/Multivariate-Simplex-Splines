@@ -1,5 +1,5 @@
 function [global_B_id, global_B_val, global_idx_val Y_hat_spline,...
-    c_spline, VAR] = simplex_continuity(spline_order, continuity,...
+    c_spline, VAR, T, x, y, vertices, RMSE] = simplex_continuity(spline_order, continuity,...
     num_triangles_x, num_triangles_y, X_id, Y_id, X_val, Y_val,...
     plot_spline, save)
 
@@ -21,12 +21,6 @@ function [global_B_id, global_B_val, global_idx_val Y_hat_spline,...
     T               = sort(Tri.ConnectivityList, 2);
     multi_index     = sorted_bcoefficient(spline_order);
     vertices        = Tri.Points;
-
-    % Create index vector for all triangles
-    vertex_index = [];
-    for i=1:1:size(T,1)
-        vertex_index = vertcat(vertex_index, multi_index);
-    end
     
     % Find all the edges for continuity
     int_edges = setdiff(sort(edges(Tri),2), sort(freeBoundary(Tri),2), 'rows');
@@ -180,60 +174,6 @@ function [global_B_id, global_B_val, global_idx_val Y_hat_spline,...
     
     residual = Y_val(global_idx_val)' - Y_hat_spline;
     RMSE = rms(residual);
-    
-    fprintf('Spline order %d and continuity %d RMS: %d\n', spline_order, continuity, RMSE)
-
-    if plot_spline
-
-        plotID = 6001;
-        figure(plotID); 
-        hold on;
-        set(plotID, 'Position', [0 0 600 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
-        set(gca, 'Color', [0.941, 0.941, 0.941]);
-        set(gca, 'XTick', [], 'YTIck', [],'XTickLabel',[],'YTickLabel',[]);
-        trimesh(T, x, y, [], 'EdgeColor', 'b', 'LineWidth', 2);
-
-       % Add vertex labels
-        for i = 1:size(vertices, 1)
-            vertex_label = (['v_{', num2str(i-0),'}']);
-            text(vertices(i,1)+0.010, vertices(i,2), vertex_label, 'Color', 'red', 'FontSize', 15);
-        end
-
-        % Add B-coefficient labels
-        B_cart = [];
-        for i = 1:size(T, 1)
-            BaryC = multi_index / spline_order;
-            simplex_coords  = vertices(T(i, :), :);
-            B_cart          = vertcat([B_cart; bsplinen_bary2cart(simplex_coords, BaryC)]);
-        end
-
-        j = 0;
-        pos_x = +0.070;
-        pos_y = +0.013;
-        for i = 1:1:size(B_cart, 1)
-            j = j + 1;
-            plot(B_cart(i,1), B_cart(i,2), '.g', 'Markersize', 20)
-            B_label = (['c_{' + string(vertex_index(j,1)) + ',' + ...
-                string(vertex_index(j,2)) + ',' + string(vertex_index(j,3)) + '}']);
-            text(B_cart(i,1)-pos_x, B_cart(i,2)-pos_y, B_label, 'Color', 'black', 'FontSize', 12);
-        end
-
-        % Add triangle labels
-        for k = 1:size(T,1)
-            triangle_x = mean(vertices(T(k,:), 1));
-            triangle_y = mean(vertices(T(k,:), 2));
-            triangle_label = (['t_', num2str(k-0)]);
-            text(triangle_x, triangle_y, triangle_label, 'Color', 'black', 'FontSize', 15');
-        end
-        
-        if save
-            figpath = 'Plots/';
-            fpath = sprintf('Spline_triangulation');
-            savefname = strcat(figpath, fpath);
-            print(plotID, '-depsc', '-r300', savefname);
-        end
-        
-    end
     
 end
 
