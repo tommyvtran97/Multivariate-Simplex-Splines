@@ -61,7 +61,7 @@ function [] = spline_plot(order, X_id, Y_id, X_val, Y_val,...
             figpath = 'Plots/';
             fpath = sprintf('3D_spline');
             savefname = strcat(figpath, fpath);
-            print(plotID, '-depsc', '-r300', savefname);
+            print(plotID, '-dpng', '-r300', savefname);
         end
         
     end

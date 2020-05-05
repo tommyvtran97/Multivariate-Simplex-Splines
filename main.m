@@ -30,7 +30,7 @@ plot_kalman     = 0;
 plot_OLS        = 0;
 plot_simplex    = 0;
 plot_spline     = 1;
-plot_validation = 1;
+plot_validation = 0;
 
 % Triangulation Settings
 num_triangles_x = 4;

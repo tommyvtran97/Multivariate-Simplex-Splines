@@ -55,7 +55,7 @@ function [] = validation_simplex(X_id, X_val, Y_id, Y_val, c_hat,...
                 figpath = 'Plots/';
                 fpath = sprintf('simplex_cm_rms');
                 savefname = strcat(figpath, fpath);
-                print(plotID, '-depsc', '-r300', savefname);
+                print(plotID, '-dpng', '-r300', savefname);
             end
         end
         

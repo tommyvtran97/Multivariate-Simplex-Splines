@@ -86,7 +86,7 @@ function [] = validation_spline(order,spline_continuity, num_triangles_x, num_tr
             figpath = 'Plots/';
             fpath = sprintf('Cm_auto_spline');
             savefname = strcat(figpath, fpath);
-            print(plotID, '-depsc', '-r300', savefname);
+            print(plotID, '-dpng', '-r300', savefname);
         end
 
         plotID = 6005;

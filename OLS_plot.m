@@ -61,7 +61,7 @@ function [] = OLS_plot(order, X_val, Y_val, Y_hat_val, plot_OLS, save)
             figpath = 'Plots/';
             fpath = sprintf('3D_OLS');
             savefname = strcat(figpath, fpath);
-            print(plotID, '-depsc', '-r300', savefname);
+            print(plotID, '-dpng', '-r300', savefname);
         end 
     end
 

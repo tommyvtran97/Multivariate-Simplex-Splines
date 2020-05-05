@@ -104,7 +104,7 @@ function [] = simplex_plot(TRI, PHI, X_id, Y_id, X_val, Y_val, Yb_hat_val, simpl
             figpath = 'Plots/';
             fpath = sprintf('3D_simplex');
             savefname = strcat(figpath, fpath);
-            print(plotID, '-depsc', '-r300', savefname);
+            print(plotID, '-dpng', '-r300', savefname);
         end
         
 end

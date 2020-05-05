@@ -55,7 +55,7 @@ function [] = validation_polynomial(X_id, Y_id, X_val, Y_val,...
                 figpath = 'Plots/';
                 fpath = sprintf('OLS_residual_rms');
                 savefname = strcat(figpath, fpath);
-                print(plotID, '-depsc', '-r300', savefname);
+                print(plotID, '-dpng', '-r300', savefname);
             end
         end
         
