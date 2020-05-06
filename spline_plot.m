@@ -1,5 +1,6 @@
 function [] = spline_plot(order, continuity, X_id, Y_id, X_val, Y_val,...
-    Y_hat_spline, global_idx_val, T, x, y, vertices, RMSE, plot_spline, save)
+    Y_hat_spline, global_idx_val, T, x, y, vertices, RMSE,...
+    num_triangles_x, num_triangles_y, plot_spline, save)
     
     fprintf('Spline order %d and continuity %d RMS: %d\n', order, continuity, RMSE);
     
@@ -26,11 +27,19 @@ function [] = spline_plot(order, continuity, X_id, Y_id, X_val, Y_val,...
         plotID = 6001;
         figure(plotID); 
         hold on;
-        set(plotID, 'Position', [0 0 600 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
+        set(plotID, 'Position', [0 0 1500 1500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
         set(gca, 'Color', [0.941, 0.941, 0.941]);
         set(gca, 'XTick', [], 'YTIck', [],'XTickLabel',[],'YTickLabel',[]);
         trimesh(T, x, y, [], 'EdgeColor', 'b', 'LineWidth', 2);
-
+        title(sprintf('B-net (%d B-coefficients per simplex) for degree %d basis',size(multi_index,1), order), 'fontsize', 16)
+        
+        
+        % Sorting the triangulations
+        T = sortrows(T,[1,-2]);
+        
+        % Create list with coordinates for the B-coefficient labels
+        [label_position] = text_label(num_triangles_x, num_triangles_y, order);
+         
        % Add vertex labels
         for i = 1:size(vertices, 1)
             vertex_label = (['v_{', num2str(i-0),'}']);
@@ -45,25 +54,14 @@ function [] = spline_plot(order, continuity, X_id, Y_id, X_val, Y_val,...
             B_cart          = vertcat([B_cart; bsplinen_bary2cart(simplex_coords, BaryC)]);
         end
         
-        j = 0;
-        pos_x = -0.01;
-        pos_y = -0.01;
-        count = 0 ;
         for i = 1:1:size(B_cart, 1)
-            j = j + 1;
-            count = count + 1;
             plot(B_cart(i,1), B_cart(i,2), '.g', 'Markersize', 20)
-            B_label = (['c_{' + string(vertex_index(j,1)) + ',' + ...
-                string(vertex_index(j,2)) + ',' + string(vertex_index(j,3)) + '}']);
-            text(B_cart(i,1)-pos_x, B_cart(i,2)-pos_y, B_label, 'Color', 'black', 'FontSize', 12);
+            B_label = (['c_{' + string(vertex_index(i,1)) + ',' + ...
+                string(vertex_index(i,2)) + ',' + string(vertex_index(i,3)) + '}']);
+            text(B_cart(i,1)+label_position(i,1), B_cart(i,2)+label_position(i,2), B_label, 'Color', 'black', 'FontSize', 12);
             
-            if count == size(multi_index, 1)
-                pos_x = -pos_x;
-                pos_y = -pos_y;
-                count = 0;
-            end
         end
-
+            
         % Add triangle labels
         for k = 1:size(T,1)
             triangle_x = mean(vertices(T(k,:), 1));

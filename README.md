@@ -1,1 +1,3 @@
-## AE4320 Assignment: Multivariate Simplex Splines
+## Multivariate Simplex Splines using F16 Flight Data
+
+

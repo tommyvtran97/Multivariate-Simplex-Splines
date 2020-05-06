@@ -26,11 +26,11 @@ max_continuity          = max_spline_order - 1;
 max_simplices_xy        = 8;
 
 % Plotting Settings
-plot_kalman     = 0;
-plot_OLS        = 0;
-plot_simplex    = 0;
+plot_kalman     = 1;
+plot_OLS        = 1;
+plot_simplex    = 1;
 plot_spline     = 1;
-plot_validation = 0;                 % This takes a while if turned on!
+plot_validation = 1;                 % This takes a while if turned on!
 
 % Triangulation Settings
 num_triangles_x = 4;
@@ -83,7 +83,8 @@ validation_simplex(X_id, X_val_simplex, Y_id, Y_val_simplex, c_hat,...
 
 % Simplex Spline Plots & Validation of Model
 spline_plot(spline_order, spline_continuity, X_id, Y_id, X_val, Y_val,...
-    Y_hat_spline, global_idx_val, T, x, y, vertices, RMSE, plot_spline, save);
+    Y_hat_spline, global_idx_val, T, x, y, vertices, RMSE,...
+    num_triangles_x, num_triangles_y, plot_spline, save);
 validation_spline(spline_order, spline_continuity, num_triangles_x,...
     num_triangles_y, X_id, Y_id, X_val, Y_val, max_spline_order, max_continuity, ...
     max_simplices_xy, Y_hat_spline, global_B_val, global_idx_val, c_spline,...

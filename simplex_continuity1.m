@@ -18,7 +18,7 @@ function [global_B_id, global_B_val, global_idx_val Y_hat_spline,...
                     grid_begin_y : step_size_y : grid_end_y);
 
     Tri             = delaunayTriangulation(x(:), y(:));
-    T               = sort(Tri.ConnectivityList, 2);
+    T               = sortrows(sort(Tri.ConnectivityList, 2), [1 -2]);
     multi_index     = sorted_bcoefficient(spline_order);
     vertices        = Tri.Points;
     
@@ -84,7 +84,6 @@ function [global_B_id, global_B_val, global_idx_val Y_hat_spline,...
 
     % Implement smoothness matrix
     H = [];
-
     for i=1:1:size(int_edges, 1)
        size_LH = size(multi_index, 1) * (triangle_edge_list(i, 1)-1);
        size_RH = size(multi_index, 1) * (triangle_edge_list(i, 2)-1);
