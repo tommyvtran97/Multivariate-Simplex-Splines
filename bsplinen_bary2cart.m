@@ -1,6 +1,3 @@
-
-
-
 % BSPLINEN_BARY2CART converts barycentric coordinates in n+1 spacec to
 %   cartesian coordinates in n-space.
 %   
@@ -22,6 +19,7 @@
 %           LAMBDA contains only positive values, X is within the convex
 %           hull of SIMPLEX. If LAMBDA contains one or more negative
 %           values, then X is outside of the convex hull of SIMPLEX.
+
 function X = bsplinen_bary2cart(simplex, lambda)
 
     Lcount = size(lambda, 1);

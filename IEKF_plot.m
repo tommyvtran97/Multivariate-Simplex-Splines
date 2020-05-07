@@ -1,3 +1,5 @@
+%IEKF_plot shows the results of the Iterated Extended Kalman Filter
+
 function IEKF_plot(Z_k, z_pred, z_pred_correct, XX_k1k1,...
             IEKFitcount, plot_kalman, save)
     
@@ -28,7 +30,6 @@ function IEKF_plot(Z_k, z_pred, z_pred_correct, XX_k1k1,...
         idx = 1:1:size(IEKFitcount, 1);
 
         % Show IEKF results
-        
         plotID = 1001;
         figure(plotID);
         set(plotID, 'Position', [0 0 1500 600], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
@@ -118,5 +119,7 @@ function IEKF_plot(Z_k, z_pred, z_pred_correct, XX_k1k1,...
             savefname = strcat(figpath, fpath);
             print(plotID, '-depsc', '-r300', savefname);
         end
+        
     end 
+    
 end

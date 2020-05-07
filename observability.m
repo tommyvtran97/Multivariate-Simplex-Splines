@@ -1,3 +1,6 @@
+% OBSERVABILITY calculates the rank of the observability matrix to check
+% for convergence of the Iterated Extended Kalman Filter
+
 function observability()
 
     syms('u', 'v', 'w','C_alpha_up', 'u_dot', 'v_dot', 'w_dot')

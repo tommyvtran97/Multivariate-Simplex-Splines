@@ -1,30 +1,46 @@
-function [] = validation_spline(order,spline_continuity, num_triangles_x, num_triangles_y, X_id, Y_id, X_val, Y_val, max_spline_order, max_continuity, max_simplices_xy, Y_hat_spline,...
-    global_B_val, global_idx_val, c_spline, VAR, plot_spline,...
-    plot_validation, save)
+% VALIDATION_POLYNOMIAL shows the results of the validation of the
+% simplex spline model.
+
+function [] = validation_spline(order,spline_continuity, num_triangles_x,...
+    num_triangles_y, X_id, Y_id, X_val, Y_val, max_spline_order,...
+    max_continuity, max_simplices_xy, Y_hat_spline, global_B_val,...
+    global_idx_val, c_spline, VAR, plot_spline, plot_validation, save)
 
     if plot_validation
-        % Fixed continuity and varying polynomial degree model performance
-        [global_B_id, global_B_val, global_idx_val Y_hat_spline, c_spline, VAR, RMSE_x, RMSE_y] = simplex_continuity2(order, spline_continuity,...
-            X_id, Y_id, X_val, Y_val, plot_spline);
-
-        % Fixed polynomial degree and varying continuity model performance
-        [global_B_id, global_B_val, global_idx_val Y_hat_spline, c_spline, VAR, RMSE_x_cont, RMSE_y_cont] = simplex_continuity3(order, max_continuity,...
-            X_id, Y_id, X_val, Y_val, max_spline_order, plot_spline);
-
-        %Varying number of simplices
-        [global_B_id, global_B_val, global_idx_val Y_hat_spline, c_spline, VAR, RMSE_x_simp, RMSE_y_simp] = simplex_continuity4(order, spline_continuity,...
-            max_simplices_xy, X_id, Y_id, X_val, Y_val, max_spline_order, plot_spline);
         
-        [global_B_id, global_B_val, global_idx_val Y_hat_spline, c_spline, VAR, T, x, y, vertices, RMSE] = simplex_continuity1(order, spline_continuity,...
-            num_triangles_x, num_triangles_y, X_id, Y_id, X_val, Y_val, plot_spline, save);
+        % Fixed continuity order and varying polynomial order
+        [global_B_id, global_B_val, global_idx_val Y_hat_spline, c_spline,...
+            VAR, RMSE_x, RMSE_y] = simplex_continuity2(order,...
+            spline_continuity, X_id, Y_id, X_val, Y_val, plot_spline);
+
+        % Fixed polynomial degree and varying continuity
+        [global_B_id, global_B_val, global_idx_val Y_hat_spline, c_spline,...
+            VAR, RMSE_x_cont, RMSE_y_cont] = simplex_continuity3(order,...
+            max_continuity, X_id, Y_id, X_val, Y_val, max_spline_order,...
+            plot_spline);
+
+        % Varying number of simplices
+        [global_B_id, global_B_val, global_idx_val Y_hat_spline, c_spline,...
+            VAR, RMSE_x_simp, RMSE_y_simp] = simplex_continuity4(order,...
+            spline_continuity, max_simplices_xy, X_id, Y_id, X_val, Y_val,...
+            max_spline_order, plot_spline);
+        
+        [global_B_id, global_B_val, global_idx_val Y_hat_spline, c_spline,...
+            VAR, T, x, y, vertices, RMSE] = simplex_continuity1(order,...
+            spline_continuity, num_triangles_x, num_triangles_y, X_id,...
+            Y_id, X_val, Y_val, plot_spline, save);
+        
     end
 
     if plot_spline 
         
-        % Initalize Parameters
+        % Initalize parameters
         Y_val = Y_val';
+        
+        % Calculate the residual
         residual = Y_val(global_idx_val) - Y_hat_spline;
-
+        
+        % Calculate the autocorrelation of the residual
         conf = 1.96/sqrt(length(residual));
         [acx, lags] = xcorr(residual-mean(residual), 'coeff');
 
@@ -32,6 +48,7 @@ function [] = validation_spline(order,spline_continuity, num_triangles_x, num_tr
         coef_simplex_idx = 1:1:size(global_B_val, 2);
         
         if plot_validation
+            
             plotID = 6003;
             figure(plotID);
             set(plotID, 'Position', [0 0 1500 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
@@ -60,6 +77,7 @@ function [] = validation_spline(order,spline_continuity, num_triangles_x, num_tr
                 savefname = strcat(figpath, fpath);
                 print(plotID, '-depsc', '-r300', savefname);
             end
+            
         end
 
         plotID = 6004;

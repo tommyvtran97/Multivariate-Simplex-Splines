@@ -1,7 +1,10 @@
+% SIMPLEX_CONTINUITY1 creates a smoothness matrix that is required for 
+% the continuity conditions and also creates the global regression matrix
+
 function [global_B_id, global_B_val, global_idx_val Y_hat_spline,...
-    c_spline, VAR, T, x, y, vertices, RMSE] = simplex_continuity(spline_order, continuity,...
-    num_triangles_x, num_triangles_y, X_id, Y_id, X_val, Y_val,...
-    plot_spline, save)
+    c_spline, VAR, T, x, y, vertices, RMSE] = simplex_continuity(...
+    spline_order, continuity, num_triangles_x, num_triangles_y,...
+    X_id, Y_id, X_val, Y_val, plot_spline, save)
 
     % Define the grid boundaries
     grid_begin_x    = -0.2;
@@ -9,11 +12,11 @@ function [global_B_id, global_B_val, global_idx_val Y_hat_spline,...
     grid_end_x      = 0.8;
     grid_end_y      = 0.2;
 
-    % Create Step Size
+    % Create step size of the grid
     step_size_x     = (grid_end_x - grid_begin_x)/num_triangles_x;
     step_size_y     = (grid_end_y - grid_begin_y)/num_triangles_y;
 
-    % Create Grid 
+    % Create the grid
     [x, y]          = meshgrid(grid_begin_x: step_size_x : grid_end_x,...
                     grid_begin_y : step_size_y : grid_end_y);
 
@@ -22,10 +25,10 @@ function [global_B_id, global_B_val, global_idx_val Y_hat_spline,...
     multi_index     = sorted_bcoefficient(spline_order);
     vertices        = Tri.Points;
     
-    % Find all the edges for continuity
+    % Find all the edges for each simplex
     int_edges = setdiff(sort(edges(Tri),2), sort(freeBoundary(Tri),2), 'rows');
 
-    % Find triangle with interior edge
+    % Find the matching simplices for each edge
     triangle_edge_list = [];
     triangle_list = [];
     for i=1:1:size(int_edges, 1)
@@ -82,7 +85,7 @@ function [global_B_id, global_B_val, global_idx_val Y_hat_spline,...
        index_list = [];
     end
 
-    % Implement smoothness matrix
+    % Implement smoothness the matrix
     H = [];
     for i=1:1:size(int_edges, 1)
        size_LH = size(multi_index, 1) * (triangle_edge_list(i, 1)-1);
@@ -122,7 +125,6 @@ function [global_B_id, global_B_val, global_idx_val Y_hat_spline,...
                 column_3 = zeros(size(multi_index_LH, 1), 1);
             end
 
-
             matrix_RH  = horzcat(column_1, column_2, column_3);
 
             multi_index_RH = [];
@@ -132,12 +134,12 @@ function [global_B_id, global_B_val, global_idx_val Y_hat_spline,...
                 end
             end
 
-            % Create smoothness matrix
+            % Create smoothness the matrix
             smooth_matrix = zeros(size(multi_index_LH, 1), size(multi_index, 1)*size(T,1));
 
             OOE_BaryV1 = OOE_vertex_bary_1(i,:);
 
-            % Store result into smoothness matrix
+            % Store result into the smoothness matrix
             index = 1;
             id = 1;
             for k=1:1:size(multi_index_LH, 1)
@@ -171,6 +173,7 @@ function [global_B_id, global_B_val, global_idx_val Y_hat_spline,...
     [global_B_id, global_B_val, global_idx_val, Y_hat_spline, c_spline, VAR]...
     = global_B_matrix(spline_order, X_id, Y_id, X_val, Tri, T, H);
     
+    % Calculate the root mean square (RMS)
     residual = Y_val(global_idx_val)' - Y_hat_spline;
     RMSE = rms(residual);
     

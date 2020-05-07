@@ -1,4 +1,8 @@
+% RK4 calculates the one step-ahead prediction
+
 function [t,w] = rk4(fn, xin, uin, t)
+    
+    % Initialize parameters
     g = 9.81; 
     a = t(1); 
     b = t(2);
@@ -6,7 +10,8 @@ function [t,w] = rk4(fn, xin, uin, t)
     N = 2;
     h = (b-a) / N;
     t = a;
-
+    
+    % Perform Runge-Kutta algorithm
     for j=1:N
         K1 = h * fn(t, w, uin);
         K2 = h * fn(t+h/2, w+K1/2, uin);
@@ -16,3 +21,5 @@ function [t,w] = rk4(fn, xin, uin, t)
         w = w + (K1 + 2*K2 + 2*K3 + K4) / 6;
         t = a + j*h;
     end
+    
+end

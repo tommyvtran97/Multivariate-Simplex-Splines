@@ -1,4 +1,9 @@
-function [] = simplex_plot(TRI, PHI, X_id, Y_id, X_val, Y_val, Yb_hat_val, simplex_order, plot_simplex, save)
+% SIMPLEX_PLOT shows the results from the simplex polynomial model
+
+function [] = simplex_plot(TRI, PHI, X_id, Y_id, X_val, Y_val, Yb_hat_val,...
+    simplex_order, RMSE, plot_simplex, save)
+
+    fprintf('Simplex order %d and RMS: %d\n', simplex_order, RMSE);
     
     if (plot_simplex)
         
@@ -9,6 +14,7 @@ function [] = simplex_plot(TRI, PHI, X_id, Y_id, X_val, Y_val, Yb_hat_val, simpl
         Tri_val         = delaunayn(X_val(:, [1 2]));
         multi_index     = sorted_bcoefficient(simplex_order);
         
+        % Show the results
         plotID = 4001;
         figure(plotID);
         set(plotID, 'Position', [0 0 1500 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
@@ -19,6 +25,7 @@ function [] = simplex_plot(TRI, PHI, X_id, Y_id, X_val, Y_val, Yb_hat_val, simpl
         trimesh(TRI, PHI(:,1), PHI(:,2), [], 'EdgeColor', 'b', 'LineWidth', 2);
         title(sprintf('B-net (%d B-coefficients) for degree %d basis',size(multi_index,1), simplex_order), 'fontsize', 16)
         
+        % Add labels for vertices
         vertices = PHI;
         for i = 1:size(vertices, 1)
             vertex_label = (['v_', num2str(i-0)]);
@@ -32,7 +39,7 @@ function [] = simplex_plot(TRI, PHI, X_id, Y_id, X_val, Y_val, Yb_hat_val, simpl
             B_cart = horzcat(bsplinen_bary2cart(simplex_coord, BaryC));
         end
         
-
+        % Add label for the B-coefficients
         for i = 1:size(B_cart, 1)
             plot(B_cart(i,1), B_cart(i,2), '.g', 'Markersize', 20)
             B_label = (['c_{' + string(multi_index(i,1)) + ',' + ...
@@ -70,7 +77,7 @@ function [] = simplex_plot(TRI, PHI, X_id, Y_id, X_val, Y_val, Yb_hat_val, simpl
         view(140, 36);
         grid on;
 
-        % Set fancy options for plotting 
+        % Fancy options for plotting 
         set(gcf,'Renderer','OpenGL');
         poslight = light('Position',[0.5 .5 15],'Style','local');
         hlight = camlight('headlight');
@@ -91,7 +98,7 @@ function [] = simplex_plot(TRI, PHI, X_id, Y_id, X_val, Y_val, Yb_hat_val, simpl
         view(140, 36);
         grid on;
 
-        % Set fancy options for plotting 
+        % Fancy options for plotting 
         set(gcf,'Renderer','OpenGL');
         poslight = light('Position',[0.5 .5 15],'Style','local');
         hlight = camlight('headlight');
@@ -107,4 +114,6 @@ function [] = simplex_plot(TRI, PHI, X_id, Y_id, X_val, Y_val, Yb_hat_val, simpl
             print(plotID, '-dpng', '-r300', savefname);
         end
         
+    end
+    
 end

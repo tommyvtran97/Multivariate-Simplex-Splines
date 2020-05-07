@@ -4,6 +4,7 @@
 %   
 % Adapted from C.C. de Visser Delft University of Technology 2013
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 function xdot = kf_calcFx(t, x, u)
 
     n       = size(x, 1);

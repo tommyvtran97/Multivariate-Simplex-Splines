@@ -1,3 +1,6 @@
+% VALIDATION_POLYNOMIAL shows the results of the validation of the
+% polynomial model.
+
 function [] = validation_polynomial(X_id, Y_id, X_val, Y_val,...
     polynomial_order, max_polynomial_order, plot_result, plot_validation, save)
     
@@ -8,7 +11,8 @@ function [] = validation_polynomial(X_id, Y_id, X_val, Y_val,...
             RMSE_y = [];
 
             for order=1:1:max_polynomial_order
-                [Y_hat_val, theta_hat, Ax_val] = OLS_function(order,X_id, Y_id, X_val);
+                [Y_hat_val, theta_hat, Ax_val, ~] = OLS_function(order,X_id,...
+                    Y_id, X_val, Y_val);
 
                 residual  = (Y_val - Y_hat_val);
                 RMSE = rms(residual);
@@ -16,23 +20,29 @@ function [] = validation_polynomial(X_id, Y_id, X_val, Y_val,...
                 RMSE_x = [RMSE_x, order];
                 RMSE_y = [RMSE_y, RMSE];
             end
+            
         end
         
-        [Y_hat_val, theta_hat, Ax_val] = OLS_function(polynomial_order, X_id, Y_id, X_val);
+        % Calculate the residual
+        [Y_hat_val, theta_hat, Ax_val, ~] = OLS_function(polynomial_order, X_id, Y_id, X_val,Y_val);
         residual = (Y_val - Y_hat_val)';
-
+        
+        % Calculate the autocorrelation of the residual
         conf = 1.96/sqrt(length(residual));
         [acx, lags] = xcorr(residual-mean(residual), 'coeff');
 
-        % Statistical Analysis
-        sigma = (residual' * residual) / (size(Ax_val, 1) - size(Ax_val, 2));
-        COV = sigma * pinv(Ax_val' * Ax_val);
+        % Statistical analysis
+        M1 = pinv(Ax_val' * Ax_val) * Ax_val';
+        M2 = Ax_val * pinv(Ax_val' * Ax_val);
+        E_residual = cov(residual);
+        COV = M1*E_residual*M2;
         VAR = diag(COV);
 
         coef_idx = 1:1:size(VAR, 1);
         coef_OLS_idx = 1:1:size(theta_hat, 1);
         
         if plot_validation
+            
             plotID = 3001;
             figure(plotID);
             set(plotID, 'Position', [0 0 1500 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
@@ -57,11 +67,13 @@ function [] = validation_polynomial(X_id, Y_id, X_val, Y_val,...
                 savefname = strcat(figpath, fpath);
                 print(plotID, '-dpng', '-r300', savefname);
             end
+            
         end
         
         plotID = 3002;
         figure(plotID);
-        set(plotID, 'Position', [0 0 600 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
+        set(plotID, 'Position', [0 0 1500 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
+        subplot(121)
         hold on;
         line([lags(1), lags(end)], [conf, conf], 'Color','red','LineStyle','--');
         line([lags(1), lags(end)], [-conf, -conf], 'Color','red','LineStyle','--');
@@ -70,9 +82,15 @@ function [] = validation_polynomial(X_id, Y_id, X_val, Y_val,...
         ylabel('Auto-correlation', 'Interpreter', 'Latex');
         legend('95% Confidence Interval');
         grid on;
+        
+        subplot(122)
+        plot(Y_val, residual, '.k')
+        ylabel('Residual [-]', 'Interpreter', 'Latex');
+        xlabel('Predicted value [-]', 'Interpreter', 'Latex');
+        grid on;
         if (save)
             figpath = 'Plots/';
-            fpath = sprintf('Cm_auto_simple');
+            fpath = sprintf('Cm_auto_simple_variance');
             savefname = strcat(figpath, fpath);
             print(plotID, '-depsc', '-r300', savefname);
         end
@@ -98,6 +116,7 @@ function [] = validation_polynomial(X_id, Y_id, X_val, Y_val,...
             savefname = strcat(figpath, fpath);
             print(plotID, '-depsc', '-r300', savefname);
         end
+        
     end
     
 end

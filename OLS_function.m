@@ -1,4 +1,8 @@
-function [Y_hat_val, theta_hat, Ax_val] = OLS_function(polynomial_order, X_id, Y_id, X_val)
+% OLS_FUNCTION performs a ordinay least square to estimate the parameters
+% of the polynomial model
+
+function [Y_hat_val, theta_hat, Ax_val, RMSE] = OLS_function(polynomial_order,...
+    X_id, Y_id, X_val, Y_val)
     
     % Transpose matrice
     Y_id = Y_id';
@@ -50,5 +54,9 @@ function [Y_hat_val, theta_hat, Ax_val] = OLS_function(polynomial_order, X_id, Y
     
     % Calculate the estimate values from OLS method
     Y_hat_val = (Ax_val * theta_hat)';   % Tranpose to correct size
+    
+    % Calculate the root mean square (RMS)
+    residual = Y_val - Y_hat_val;
+    RMSE = rms(residual);
     
 end 

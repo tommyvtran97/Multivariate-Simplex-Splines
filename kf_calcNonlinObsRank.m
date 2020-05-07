@@ -17,6 +17,7 @@
 %   email: c.c.devisser@tudelft.nl
 %   Version: 2.0
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 function rankObs = kf_calcNonlinObsRank(f, h, X, X0)
 
 

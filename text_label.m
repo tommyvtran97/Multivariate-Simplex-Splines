@@ -1,8 +1,14 @@
+% TEXT_LABEL creates a list with coordinates for the text labels of the
+% B-coefficient which is used for the triagulation plots
+
+
 function [pos_label] = text_label(num_triangles_x, num_triangles_y, spline_order)
     
-    % Initialize position and scaling parameters
+    % Initialize position
     x = 0.01;
     y = 0.01;
+    
+    % Initialize scaling paramaters
     sx = 3;
     sxx = 3;
     sy = 3;
@@ -36,10 +42,10 @@ function [pos_label] = text_label(num_triangles_x, num_triangles_y, spline_order
             M2(1,2) = 0;
             M2_pos2 = vertcat(M2_pos2, M2);
         end
-
+    end
+    
     label_position_1 = [M1_pos1; M2_pos1; -sxx*x y;];
     label_position_2 = [sx*x -y; M1_pos2; -sx*x syy*y; M2_pos2; -sx*x -y;];
-    
     label_position_comb = vertcat(label_position_1, label_position_2);
     
     pos_label = [];

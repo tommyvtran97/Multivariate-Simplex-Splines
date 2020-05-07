@@ -1,4 +1,9 @@
-function [] = OLS_plot(order, X_val, Y_val, Y_hat_val, plot_OLS, save)
+% OLS_PLOT shows the results the polynomial obtained from the ordinary
+% least square method
+ 
+function [] = OLS_plot(order, X_val, Y_val, Y_hat_val, RMSE, plot_OLS, save)
+
+    fprintf('Polynomial order %d and RMS: %d\n', order, RMSE);
     
     if (plot_OLS)
         
@@ -12,7 +17,7 @@ function [] = OLS_plot(order, X_val, Y_val, Y_hat_val, plot_OLS, save)
 
         TRIeval = delaunayn(Z_k(:, [1 2]));
 
-        % Create figures
+        % Show the results
         plotID = 2001;
         figure(plotID);
         set(plotID, 'Position', [0 0 1500 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
@@ -27,7 +32,7 @@ function [] = OLS_plot(order, X_val, Y_val, Y_hat_val, plot_OLS, save)
         view(140, 36);
         grid on;
 
-        % Set fancy options for plotting 
+        % Fancy options for plotting 
         set(gcf,'Renderer','OpenGL');
         poslight = light('Position',[0.5 .5 15],'Style','local');
         hlight = camlight('headlight');
@@ -48,7 +53,7 @@ function [] = OLS_plot(order, X_val, Y_val, Y_hat_val, plot_OLS, save)
         view(140, 36);
         grid on;
 
-        % Set fancy options for plotting 
+        % Fancy options for plotting 
         set(gcf,'Renderer','OpenGL');
         poslight = light('Position',[0.5 .5 15],'Style','local');
         hlight = camlight('headlight');
@@ -63,6 +68,7 @@ function [] = OLS_plot(order, X_val, Y_val, Y_hat_val, plot_OLS, save)
             savefname = strcat(figpath, fpath);
             print(plotID, '-dpng', '-r300', savefname);
         end 
+        
     end
 
 end 

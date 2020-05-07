@@ -1,7 +1,12 @@
-function [B_sorted] = sorted_coefficient(simplex_order)
-   
+% SORTED_BCOEFFICIENT creates a vector that consists of all possible
+% permutations of a 3 digit number in lexographical order
+
+function [B_sorted] = sorted_bcoefficient(simplex_order)
+    
+    % Initialize list
     B_sorted = [];
-    % Write algorithm
+    
+    % Create the algorithm
     for i=simplex_order:-1:0
         for k = 0:1:simplex_order
             for j = simplex_order:-1:0
@@ -12,5 +17,8 @@ function [B_sorted] = sorted_coefficient(simplex_order)
             end
         end
     end
+    
+    % Transpose the matrix
     B_sorted = B_sorted';
+    
 end

@@ -55,11 +55,11 @@ IEKF_plot(Z_k, z_pred, z_pred_corr, XX_k1k1,...
 [X_id, X_val, Y_id, Y_val] = split_data(z_pred_corr, Cm);
 
 %% Run Ordinary Least Square Estimator
-[Y_hat_val, theta_hat, Ax_val] = OLS_function(polynomial_order, X_id, ...
-    Y_id, X_val);
+[Y_hat_val, theta_hat, Ax_val, RMSE] = OLS_function(polynomial_order, X_id, ...
+    Y_id, X_val, Y_val);
 
 % OLS Plots & Validation of Model
-OLS_plot(polynomial_order, X_val, Y_val, Y_hat_val, plot_OLS, save)
+OLS_plot(polynomial_order, X_val, Y_val, Y_hat_val, RMSE, plot_OLS, save)
 validation_polynomial(X_id, Y_id, X_val, Y_val, ...
     polynomial_order, max_polynomial_order, plot_OLS, plot_validation, save)
 
@@ -70,7 +70,7 @@ validation_polynomial(X_id, Y_id, X_val, Y_val, ...
 
 % Simplex Plots & Validation of Model
 simplex_plot(TRI, PHI, X_id, Y_id, X_val_simplex, Y_val_simplex, Yb_hat_val,...
-    simplex_order, plot_simplex, save);
+    simplex_order, RMSE, plot_simplex, save);
 validation_simplex(X_id, X_val_simplex, Y_id, Y_val_simplex, c_hat,...
     simplex_order, max_simplex_order, plot_simplex, plot_validation, save)
 

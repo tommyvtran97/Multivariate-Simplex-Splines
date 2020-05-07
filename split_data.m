@@ -1,3 +1,6 @@
+% SPLIT_DATA separates the dataset into an identification and validation
+% dataset
+
 function [X_id, X_val, Y_id, Y_val] = split_data(X, Y)
     
     X_id   = X(1:2,1:2:end);     % odd column matrix

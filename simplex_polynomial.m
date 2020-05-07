@@ -1,3 +1,7 @@
+% SIMPLEX_POLYNOMIAL creates the structure for the simplex polynomial and
+% uses an ordinary least square regression to calculate the estimated
+% parameters for the simplex polynomial
+
 function [TRI, PHI, Bx_val, c_hat, X_val, Y_val, Yb_hat_val, residual, RMSE] = ...
     simplex_polynomial(X_id, Y_id, X_val, Y_val, simplex_order, plot_result, save)
     
@@ -13,7 +17,7 @@ function [TRI, PHI, Bx_val, c_hat, X_val, Y_val, Yb_hat_val, residual, RMSE] = .
     % Define simplex
     TRI = delaunayn(PHI);
     
-    % Calculate points inside simplex and barocoordinates
+    % Calculate points inside simplex and barocentric coordinates
     [IMap_id, BaryC_id]    = tsearchn(PHI,TRI,X_id);
     [IMap_val, BaryC_val]  = tsearchn(PHI,TRI,X_val);
   
@@ -50,16 +54,16 @@ function [TRI, PHI, Bx_val, c_hat, X_val, Y_val, Yb_hat_val, residual, RMSE] = .
         end
     end
     
-    % Calculate the C coefficients 
+    % Calculate the B-coefficients 
     c_hat = pinv(Bx_id' * Bx_id) * Bx_id' * Y_id;
     
-    % Calculate validation estiation
+    % Calculate estimation from the validation dataset
     Yb_hat_val  = (Bx_val * c_hat)';    % Tranpose to correct size
     
     X_val = X_val';
     Y_val = Y_val';
     
-    % Calculate residual and RMSE
+    % Calculate the root mean square (RMS)
     residual = (Y_val - Yb_hat_val);
     RMSE = rms(residual);
 

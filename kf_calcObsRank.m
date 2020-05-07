@@ -16,6 +16,7 @@
 %   email: c.c.devisser@tudelft.nl
 %   Version: 2.0
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 function r = kf_calcObsRank(H, Fx)
 
     nstates = size(Fx,1);
@@ -28,4 +29,4 @@ function r = kf_calcObsRank(H, Fx)
     end
     Rank = [ Rank; H*F ];
     r    = rank(Rank);
-
+end

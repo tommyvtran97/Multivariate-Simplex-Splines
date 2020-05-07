@@ -3,6 +3,7 @@
 %   
 % Adapted from C.C. de Visser Delft University of Technology 2013
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 function zpred = kf_calcHx(t, x, u)
     
     n        = size(x, 1);

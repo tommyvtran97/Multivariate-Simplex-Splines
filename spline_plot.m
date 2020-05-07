@@ -1,3 +1,5 @@
+% SPLINE_PLOT shows the results from the simplex spline model
+
 function [] = spline_plot(order, continuity, X_id, Y_id, X_val, Y_val,...
     Y_hat_spline, global_idx_val, T, x, y, vertices, RMSE,...
     num_triangles_x, num_triangles_y, plot_spline, save)
@@ -6,16 +8,17 @@ function [] = spline_plot(order, continuity, X_id, Y_id, X_val, Y_val,...
     
     if plot_spline
         
-        % Initialize Parameters
+        % Initialize parameters
         X_id    = X_id';
         X_val   = X_val';
         Y_id    = Y_id';
         Y_val   = Y_val';
 
         % Create triangulation
-        Tri_spline = delaunayn(X_val(global_idx_val, [1 2]));
-        Tri_val = delaunayn(X_val(:, [1 2]));
+        Tri_spline      = delaunayn(X_val(global_idx_val, [1 2]));
+        Tri_val         = delaunayn(X_val(:, [1 2]));
         
+        % Calculate sorted B-coefficients
         multi_index     = sorted_bcoefficient(order);
         
         % Create index vector for all triangles
@@ -23,7 +26,8 @@ function [] = spline_plot(order, continuity, X_id, Y_id, X_val, Y_val,...
         for i=1:1:size(T,1)
             vertex_index = vertcat(vertex_index, multi_index);
         end
-   
+        
+        % Show the results
         plotID = 6001;
         figure(plotID); 
         hold on;
@@ -77,7 +81,6 @@ function [] = spline_plot(order, continuity, X_id, Y_id, X_val, Y_val,...
             print(plotID, '-depsc', '-r300', savefname);
         end
 
-
         plotID = 6002;
         figure(plotID);
         set(plotID, 'Position', [0 0 1500 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
@@ -92,7 +95,7 @@ function [] = spline_plot(order, continuity, X_id, Y_id, X_val, Y_val,...
         view(140, 36);
         grid on;
 
-        % Set fancy options for plotting 
+        % Fancy options for plotting 
         set(gcf,'Renderer','OpenGL');
         poslight = light('Position',[0.5 .5 15],'Style','local');
         hlight = camlight('headlight');
@@ -113,7 +116,7 @@ function [] = spline_plot(order, continuity, X_id, Y_id, X_val, Y_val,...
         view(140, 36);
         grid on;
 
-        % Set fancy options for plotting 
+        % Fancy options for plotting
         set(gcf,'Renderer','OpenGL');
         poslight = light('Position',[0.5 .5 15],'Style','local');
         hlight = camlight('headlight');
@@ -130,3 +133,5 @@ function [] = spline_plot(order, continuity, X_id, Y_id, X_val, Y_val,...
         end
         
     end
+    
+end

@@ -1,38 +1,46 @@
+% VALIDATION_SIMPLEX shows the results of the validation of the
+% simplex model.
+
 function [] = validation_simplex(X_id, X_val, Y_id, Y_val, c_hat,...
     simplex_order, max_simplex_order, plot_result, plot_validation, save)
     
     if (plot_result)
  
         if plot_validation
+            
             RMSE_x = [];
             RMSE_y = [];
 
             for order=1:1:max_simplex_order
-                [~, ~, ~, ~, ~, ~, ~, ~, RMSE] = simplex_polynomial(X_id, Y_id,...
-                    X_val, Y_val, order,...
-                    plot_result, save);
+                [~, ~, ~, ~, ~, ~, ~, ~, RMSE] = simplex_polynomial(X_id,...
+                    Y_id, X_val, Y_val, order, plot_result, save);
                 RMSE_x = [RMSE_x, order];
                 RMSE_y = [RMSE_y, RMSE];
             end
+            
         end
-
-        [~, ~, Bx_val, ~, ~, ~, ~, residual, ~] = simplex_polynomial(X_id, Y_id,...
-            X_val, Y_val, simplex_order, plot_result, save);
-
+        
+        [~, ~, Bx_val, ~, ~, ~, ~, residual, ~] = simplex_polynomial(X_id,...
+            Y_id, X_val, Y_val, simplex_order, plot_result, save);
+        
         residual = residual';
-
+        
+        % Calculate the autocorrelation of the residual
         conf = 1.96/sqrt(length(residual));
         [acx, lags] = xcorr(residual-mean(residual), 'coeff');
 
-        % Statistical Analysis
-        sigma = (residual' * residual) / (size(Bx_val, 1) - size(Bx_val, 2));
-        COV = sigma * pinv(Bx_val' * Bx_val);
+        % Statistical analysis
+        M1 = pinv(Bx_val' * Bx_val) * Bx_val';
+        M2 = Bx_val * pinv(Bx_val' * Bx_val);
+        E_residual = cov(residual);
+        COV = M1*E_residual*M2;
         VAR = diag(COV);
-
+        
         coef_idx = 1:1:size(VAR, 1);
         coef_simplex_idx = 1:1:size(Bx_val, 2);
         
         if plot_validation
+            
             plotID = 5001;
             figure(plotID);
             set(plotID, 'Position', [0 0 1500 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
@@ -57,6 +65,7 @@ function [] = validation_simplex(X_id, X_val, Y_id, Y_val, c_hat,...
                 savefname = strcat(figpath, fpath);
                 print(plotID, '-dpng', '-r300', savefname);
             end
+            
         end
         
         plotID = 5002;
@@ -98,6 +107,7 @@ function [] = validation_simplex(X_id, X_val, Y_id, Y_val, c_hat,...
             savefname = strcat(figpath, fpath);
             print(plotID, '-depsc', '-r300', savefname);
         end
+        
     end
     
 end

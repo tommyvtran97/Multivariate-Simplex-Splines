@@ -1,9 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % H = kf_calcDHx(x) Calculates the Jacobian of the output dynamics equation f(x,u,t) 
 %   
-%   Author: C.C. de Visser, Delft University of Technology, 2013
-%   email: c.c.devisser@tudelft.nl
-%   Version: 1.0
+% Adapted from C.C. de Visser Delft University of Technology 2013
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function Hx = kf_calcDHx(t, x, u)
 
@@ -29,4 +27,4 @@ function Hx = kf_calcDHx(t, x, u)
             J21, J22, J23, J24;
             J31, J32, J33, J34];
 
-    end
+end

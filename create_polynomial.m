@@ -1,3 +1,6 @@
+% CREATE_POLYNOMIAL creates a vector that contains all possible 2 digit
+% permutations based the order of the polynomial in a lexographical order
+
 function [expo] = create_polynomial(poly_order)
     
     expo = [];

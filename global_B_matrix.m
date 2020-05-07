@@ -1,7 +1,9 @@
+% GLOBAL_B_MATRIX creates a regression matrix
+
 function [global_B_id, global_B_val, global_idx_val, Y_hat_spline,...
     c_spline, VAR] = global_B_matrix(order, X_id, Y_id, X_val, Tri, T, H)
     
-    % Initialize Parameters
+    % Initialize parameters
     X_id    = X_id';
     X_val   = X_val';
     Y_id    = Y_id';
@@ -9,17 +11,19 @@ function [global_B_id, global_B_val, global_idx_val, Y_hat_spline,...
     % Create B regression matrix
     [B_sorted] = sorted_bcoefficient(order);
     
-    % Perform Data Membership Search
+    % Perform data membership search
     [IMapB_id, BaryB_id]    = tsearchn(Tri.Points, T, X_id);
     [IMapB_val, BaryB_val]  = tsearchn(Tri.Points, T, X_val);
     
     num_simplex = size(T, 1);
-  
+    
+    % Initialize empty list to store results
     global_B_id     = [];
     global_B_val    = [];
     global_idx_id   = [];
     global_idx_val  = [];
     
+    % Iterate over all simplices
     for k=1:1:num_simplex
         
         BaryB_id_new    = BaryB_id(find(IMapB_id == k), :);
@@ -52,25 +56,26 @@ function [global_B_id, global_B_val, global_idx_val, Y_hat_spline,...
                     BaryB_val_new(i,2)^(B_sorted(j,2)) * BaryB_val_new(i,3)^(B_sorted(j,3));
             end
         end
-        % Create Diagonal Block Matrix
+        
+        % Create diagonal block matrix
         global_B_id     = blkdiag(global_B_id, global_Bx_id);
         global_B_val    = blkdiag(global_B_val, global_Bx_val);
       
     end
 
-    % Equality Constraint OLS Estimator
+    % Equality constraint OLS estimator
     matrix_A = pinv([global_B_id' * global_B_id, H'; ...
         H, zeros(size(H, 1), size(H,1))]);
     C1 = matrix_A(1:size(global_B_id,2), 1:size(global_B_id,2));
     c_spline = C1 * global_B_id' * Y_id(global_idx_id);
    
-    % Calculate Variance
+    % Calculate the variance
     COV = C1;   VAR = diag(C1);
    
-    % Calculate Estimate Simplex Spline
+    % Calculate estimated values from the simplex spline model
     Y_hat_spline = global_B_val * c_spline;
 
-    % Check Continuity Condition
+    % Check continuity dondition
     epsilon = 10^(-4);
     if (max(H*c_spline)) < epsilon
         %fprintf('Continuity Satified!\n')
