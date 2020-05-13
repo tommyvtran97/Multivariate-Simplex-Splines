@@ -38,7 +38,6 @@ function IEKF_plot(Z_k, z_pred, z_pred_correct, XX_k1k1,...
         plot(t(1:N), alpha_m(1:N), 'r-', 'LineWidth', 1.5)
         plot(t(1:N), kf_alpha(1:N), 'b-', 'LineWidth', 1.5)
         plot(t(1:N), alpha_true(1:N), 'g-', 'LineWidth', 1.5)
-        xlabel('Time [s]','interpreter','latex'); 
         label1 = ylabel('$\alpha$ [rad]','interpreter','latex','FontSize', 20); 
         label_ref_1 = label1.Position(1) - 0.2;
         legend('Measurement Data', 'Iterated Extended Kalman Filter', 'True Data', 'location', 'northwest')
@@ -47,8 +46,7 @@ function IEKF_plot(Z_k, z_pred, z_pred_correct, XX_k1k1,...
         subplot(312)
         hold on;
         plot(t(1:N), beta_m(1:N), 'r-', 'LineWidth', 1.5)
-        plot(t(1:N), kf_beta(1:N), 'b-', 'LineWidth', 1.5)
-        xlabel('Time [s]','interpreter','latex','FontSize', 20); 
+        plot(t(1:N), kf_beta(1:N), 'b-', 'LineWidth', 1.5) 
         label1 = ylabel('$\beta$ [rad]','interpreter','latex','FontSize', 20);
         label1.Position(1) = label_ref_1 - 0.2;
         grid on;
@@ -73,21 +71,18 @@ function IEKF_plot(Z_k, z_pred, z_pred_correct, XX_k1k1,...
         set(plotID, 'Position', [0 0 1500 600], 'defaultaxesfontsize', 18, 'defaulttextfontsize', 16, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
         subplot(411) 
         plot(t(1:N), state_u(1:N), 'b-')
-        xlabel('Time [s]','interpreter','latex','FontSize', 20); 
         label1 = ylabel('$u$ [m/s]','interpreter','latex','FontSize', 20); 
         label_ref_1 = label1.Position(1);
         grid on;
 
         subplot(412)
         plot(t(1:N), state_v(1:N), 'b-')
-        xlabel('Time [s]','interpreter','latex','FontSize', 20); 
         label1 = ylabel('$v$ [m/s]','interpreter','latex','FontSize', 20); 
         label1.Position(1) = label_ref_1;
         grid on;
 
         subplot(413)
-        plot(t(1:N), state_w(1:N), 'b-')
-        xlabel('Time [s]','interpreter','latex','FontSize', 20); 
+        plot(t(1:N), state_w(1:N), 'b-') 
         label1 = ylabel('$w$ [m/s]','interpreter','latex','FontSize', 20); 
         label1.Position(1) = label_ref_1;
         grid on;
