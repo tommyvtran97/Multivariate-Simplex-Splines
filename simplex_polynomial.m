@@ -65,6 +65,6 @@ function [TRI, PHI, Bx_val, c_hat, X_val, Y_val, Yb_hat_val, residual, RMSE] = .
     
     % Calculate the root mean square (RMS)
     residual = (Y_val - Yb_hat_val);
-    RMSE = rms(residual);
+    RMSE = (rms(residual) / (max(Y_val) - min(Y_val)))*100;
 
 end 

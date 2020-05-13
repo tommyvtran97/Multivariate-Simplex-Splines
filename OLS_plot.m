@@ -3,7 +3,7 @@
  
 function [] = OLS_plot(order, X_val, Y_val, Y_hat_val, RMSE, plot_OLS, save)
 
-    fprintf('Polynomial order %d and RMS: %d\n', order, RMSE);
+    fprintf('Polynomial order %d and RMS: %.2f%%\n', order, RMSE);
     
     if (plot_OLS)
         

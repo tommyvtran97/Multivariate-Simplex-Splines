@@ -196,7 +196,7 @@ function [global_B_id, global_B_val, global_idx_val Y_hat_spline,...
        Y_val = Y_val';
        residual = Y_val(global_idx_val) - Y_hat_spline;
 
-       RMSE = rms(residual);
+       RMSE = (rms(residual) / (max(Y_val(global_idx_val)) - min(Y_val(global_idx_val))))*100;
        RMSE_x = [RMSE_x, order];
        RMSE_y = [RMSE_y, RMSE];
 

@@ -15,8 +15,8 @@ function [] = validation_polynomial(X_id, Y_id, X_val, Y_val,...
                     Y_id, X_val, Y_val);
 
                 residual  = (Y_val - Y_hat_val);
-                RMSE = rms(residual);
-
+                RMSE = (rms(residual) / (max(Y_val) - min(Y_val)))*100;
+ 
                 RMSE_x = [RMSE_x, order];
                 RMSE_y = [RMSE_y, RMSE];
             end
@@ -56,9 +56,9 @@ function [] = validation_polynomial(X_id, Y_id, X_val, Y_val,...
 
             subplot(122)
             plot(RMSE_x, RMSE_y, 'b^-', 'MarkerSize', 11, 'MarkerFaceColor',[0 0 1]);
+            ylim([8 19]);
             xlabel('Polynomial order [-]','interpreter','latex');
-            ylabel('Root mean square error (RMSE) [-]','interpreter','latex');
-            ylim([0.007 0.016]);
+            ylabel('Relative root mean square error percentage [-]','interpreter','latex');
             legend('Validation Dataset', 'location', 'northwest');
             grid on;
             if (save)

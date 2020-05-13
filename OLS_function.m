@@ -57,6 +57,6 @@ function [Y_hat_val, theta_hat, Ax_val, RMSE] = OLS_function(polynomial_order,..
     
     % Calculate the root mean square (RMS)
     residual = Y_val - Y_hat_val;
-    RMSE = rms(residual);
+    RMSE = (rms(residual) / (max(Y_val) - min(Y_val)))*100;
     
 end 

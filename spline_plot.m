@@ -4,7 +4,7 @@ function [] = spline_plot(order, continuity, X_id, Y_id, X_val, Y_val,...
     Y_hat_spline, global_idx_val, T, x, y, vertices, RMSE,...
     num_triangles_x, num_triangles_y, plot_spline, save)
     
-    fprintf('Spline order %d and continuity %d RMS: %d\n', order, continuity, RMSE);
+    fprintf('Spline order %d and continuity %d RMS: %.2f%%\n', order, continuity, RMSE);
     
     if plot_spline
         

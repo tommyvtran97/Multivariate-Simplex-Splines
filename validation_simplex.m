@@ -46,9 +46,8 @@ function [] = validation_simplex(X_id, X_val, Y_id, Y_val, c_hat,...
             set(plotID, 'Position', [0 0 1500 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
             subplot(122)
             plot(RMSE_x, RMSE_y, 'b^-', 'MarkerSize', 11, 'MarkerFaceColor',[0 0 1])
-            ylabel('Root mean squared error (RMSE) [-]','interpreter','latex');
+            ylabel('Relative root mean square error percentage [-]','interpreter','latex');
             xlabel('Polynomial degree [-]','interpreter','latex');
-            ylim([0.007 0.013]) 
             legend('Validation Dataset', 'location', 'northwest','interpreter','latex');
             grid on;
 

@@ -195,7 +195,7 @@ function [global_B_id, global_B_val, global_idx_val Y_hat_spline, ...
         
         % Calculate the root mean square (RMS)
         residual = Y_val(global_idx_val)' - Y_hat_spline;
-        RMSE = rms(residual);
+        RMSE = (rms(residual) / (max(Y_val(global_idx_val)) - min(Y_val(global_idx_val))))*100;
 
         RMSE_x_cont = [RMSE_x_cont, order_continuity];
         RMSE_y_cont = [RMSE_y_cont, RMSE];

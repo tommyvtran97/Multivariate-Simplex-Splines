@@ -3,7 +3,7 @@
 function [] = simplex_plot(TRI, PHI, X_id, Y_id, X_val, Y_val, Yb_hat_val,...
     simplex_order, RMSE, plot_simplex, save)
 
-    fprintf('Simplex order %d and RMS: %d\n', simplex_order, RMSE);
+    fprintf('Simplex order %d and RMS: %.2f%%\n', simplex_order, RMSE);
     
     if (plot_simplex)
         
