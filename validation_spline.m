@@ -54,20 +54,20 @@ function [] = validation_spline(order,spline_continuity, num_triangles_x,...
             set(plotID, 'Position', [0 0 1500 500], 'defaultaxesfontsize', 16, 'defaulttextfontsize', 14, 'color', [0.941, 0.941, 0.941], 'PaperPositionMode', 'auto');
             subplot(131)
             plot(RMSE_x, RMSE_y, 'b^-', 'MarkerSize', 11, 'MarkerFaceColor',[0 0 1])
-            ylabel('Relative root mean square error percentage [-]','interpreter','latex');
+            ylabel('Relative root mean square error percentage','interpreter','latex');
             xlabel('Polynomial degree [-]','interpreter','latex');
             legend('Continuity 1', 'location', 'northwest','interpreter','latex');
             grid on;
 
             subplot(132)
             plot(RMSE_x_cont, RMSE_y_cont, 'b^-', 'MarkerSize', 11, 'MarkerFaceColor',[0 0 1])
-            ylabel('Relative root mean square error percentage [-]','interpreter','latex');
+            ylabel('Relative root mean square error percentage','interpreter','latex');
             xlabel('Continuity [-]','interpreter','latex');
             legend('Polynomial Degree 4', 'location', 'northwest','interpreter','latex');
             grid on;
             subplot(133)
             plot(RMSE_x_simp, RMSE_y_simp, 'b^-', 'MarkerSize', 11, 'MarkerFaceColor',[0 0 1])
-            ylabel('Relative root mean square error percentage [-]','interpreter','latex');
+            ylabel('Relative root mean square error percentage','interpreter','latex');
             xlabel('Number of simplices [-]','interpreter','latex');
             legend('Polynomial Degree 4 and Continuity 1', 'location', 'northwest','interpreter','latex');
             grid on;
@@ -120,7 +120,7 @@ function [] = validation_spline(order,spline_continuity, num_triangles_x,...
         subplot(122)
         bar(coef_idx, VAR, 'b');
         xlabel('Index [-]', 'Interpreter', 'Latex');
-        ylabel('Coefficient variance', 'Interpreter', 'Latex');
+        ylabel('Coefficient variance [-]', 'Interpreter', 'Latex');
         grid on;
         if (save)
             figpath = 'Plots/';

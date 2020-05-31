@@ -58,7 +58,7 @@ function [] = validation_polynomial(X_id, Y_id, X_val, Y_val,...
             plot(RMSE_x, RMSE_y, 'b^-', 'MarkerSize', 11, 'MarkerFaceColor',[0 0 1]);
             ylim([8 19]);
             xlabel('Polynomial order [-]','interpreter','latex');
-            ylabel('Relative root mean square error percentage [-]','interpreter','latex');
+            ylabel('Relative root mean square error percentage','interpreter','latex');
             legend('Validation Dataset', 'location', 'northwest');
             grid on;
             if (save)
@@ -108,7 +108,7 @@ function [] = validation_polynomial(X_id, Y_id, X_val, Y_val,...
         subplot(122)
         bar(coef_idx, VAR, 'b');
         xlabel('Index [-]', 'Interpreter', 'Latex');
-        ylabel('Coefficient variance', 'Interpreter', 'Latex');
+        ylabel('Coefficient variance [-]', 'Interpreter', 'Latex');
         grid on;
         if (save)
             figpath = 'Plots/';
